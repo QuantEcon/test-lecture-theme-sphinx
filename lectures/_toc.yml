@@ -1,0 +1,31 @@
+# Table of contents: `jb-book` with numbered parts, the shape every lecture
+# repo uses (sphinx_multitoc_numbering numbers chapters across parts).
+format: jb-book
+root: intro
+parts:
+- caption: Text and Structure
+  numbered: true
+  chapters:
+  - file: typography
+  - file: math
+  - file: references
+- caption: Executable Content
+  numbered: true
+  chapters:
+  - file: code_cells
+  - file: figures
+- caption: Directive Families
+  numbered: true
+  chapters:
+  - file: admonitions
+  - file: exercises
+  - file: proofs
+- caption: Real Lectures
+  numbered: true
+  chapters:
+  - file: lp_intro
+- caption: Other
+  chapters:
+  - file: troubleshooting
+  - file: zreferences
+  - file: status

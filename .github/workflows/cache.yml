@@ -1,0 +1,28 @@
+name: Build Cache
+on:
+  schedule:
+    - cron: '0 3 * * 0'  # weekly, Sunday 03:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: cache-build
+  cancel-in-progress: false
+
+jobs:
+  build-cache:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/quantecon/quantecon-build:latest
+    permissions:
+      contents: read
+      issues: write
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Cache
+        uses: quantecon/actions/build-jupyter-cache@v0
+        with:
+          builders: 'html'
+          source-dir: 'lectures'
+          create-issue-on-failure: true

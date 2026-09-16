@@ -1,0 +1,54 @@
+# PR preview build. The same composite actions the production lecture repos
+# and their canary (QuantEcon/test-actions-lecture-intro) run, pinned to the
+# floating @v0 like they are, so this corpus builds the way a lecture does.
+name: CI Preview
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/quantecon/quantecon-build:latest
+    permissions:
+      contents: read
+      packages: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore Build Cache
+        id: cache
+        uses: quantecon/actions/restore-jupyter-cache@v0
+        with:
+          cache-type: 'build'
+          source-dir: 'lectures'
+          save-cache: 'true'
+
+      - name: Build Notebooks
+        uses: quantecon/actions/build-lectures@v0
+        with:
+          source-dir: 'lectures'
+          builder: 'jupyter'
+          upload-failure-reports: true
+
+      - name: Build HTML
+        id: build
+        uses: quantecon/actions/build-lectures@v0
+        with:
+          source-dir: 'lectures'
+          builder: 'html'
+          html-copy-notebooks: true
+          upload-failure-reports: true
+
+      # Netlify secrets are per-repository; until they are set this step is
+      # the only one that can fail on a fork or a fresh clone.
+      - name: Deploy to Netlify
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: quantecon/actions/preview-netlify@v0
+        with:
+          build-dir: ${{ steps.build.outputs.build-path }}
+          netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}

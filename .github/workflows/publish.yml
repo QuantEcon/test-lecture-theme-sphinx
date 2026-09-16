@@ -1,0 +1,53 @@
+# Publishes the corpus to GitHub Pages. Unlike the production lecture repos,
+# which publish on a `publish*` tag, this test site publishes on every push to
+# main: the comparison harness reads the live site, and a stale test site is a
+# stale comparison.
+name: Publish to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  packages: read
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/quantecon/quantecon-build:latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page-url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Notebooks
+        uses: quantecon/actions/build-lectures@v0
+        with:
+          source-dir: 'lectures'
+          builder: 'jupyter'
+          upload-failure-reports: true
+
+      - name: Build HTML
+        id: build
+        uses: quantecon/actions/build-lectures@v0
+        with:
+          source-dir: 'lectures'
+          builder: 'html'
+          html-copy-notebooks: true
+          upload-failure-reports: true
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: quantecon/actions/publish-gh-pages@v0
+        with:
+          build-dir: ${{ steps.build.outputs.build-path }}
