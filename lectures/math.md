@@ -131,7 +131,7 @@ x_{t+1} = A x_t + B u_t \tag{LQ}
 $$
 
 $$
-\pmatrix{ 1 \cr 2 \cr 3 }, \quad
+\begin{pmatrix} 1 \cr 2 \cr 3 \end{pmatrix}, \quad
 \check{x} = \hat{x} - \bar{x}, \quad
 \mathscr{F} \colon X \to Y, \quad
 \left( \frac{a}{b} \middle| c \right), \quad
