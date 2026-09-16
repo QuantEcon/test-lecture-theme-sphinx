@@ -115,12 +115,35 @@ sphinx:
       launch_buttons:
         colab_url                 : https://colab.research.google.com
         thebe                     : false
+    # The full production mapping (lecture-python-intro): the verbatim lectures
+    # cross-reference sibling sites, and the build runs under -W in CI.
     intersphinx_mapping:
-      intro:
-        - https://intro.quantecon.org/
+      intermediate:
+        - https://python.quantecon.org/
         - null
       pyprog:
         - https://python-programming.quantecon.org/
+        - null
+      intro:
+        - https://intro.quantecon.org/
+        - null
+      dle:
+        - https://dle.quantecon.org/
+        - null
+      dps:
+        - https://dps.quantecon.org/
+        - null
+      eqm:
+        - https://eqm.quantecon.org/
+        - null
+      stats:
+        - https://stats.quantecon.org/
+        - null
+      tools:
+        - https://tools-techniques.quantecon.org/
+        - null
+      dynam:
+        - https://dynamics.quantecon.org/
         - null
     # The union of the macro sets the lecture configs define. Note the theme
     # injects its own set too (layout.html) whenever mathjax_path is MathJax 3;
