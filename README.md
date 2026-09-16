@@ -22,6 +22,7 @@ The pages under `lectures/` are organised by construct family. Each page opens w
 | `proofs.md` | sphinx-proof | every `prf:*` kind in use (definition, example, theorem, proof, lemma, proposition, assumption, corollary, remark, property, algorithm), `{prf:ref}`, and the capitalised `{prf:Theorem}` |
 | `lp_intro.md`, `troubleshooting.md` | real lectures | captured verbatim from `lecture-python-intro` (the linear programming lecture carries 13 of the 36 display blocks that fail in KaTeX) |
 | `intro.md`, `status.md`, `zreferences.md` | the standard pages | `{tableofcontents}`, `{nb-exec-table}`, `{bibliography}` |
+| `build_info.md` | build record | generated at build time by its own code cells: the engine, theme and library versions, the repository commit and (on the mystmd side) the derivation record, so the comparison harness knows what built the site it reads |
 
 Every content page also starts the way a lecture does: a target label, the notebook logo header in a `{raw}` block (both the `html` and the `jupyter` form appear), the title and an `{index}` entry.
 

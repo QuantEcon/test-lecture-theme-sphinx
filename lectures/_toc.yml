@@ -26,6 +26,7 @@ parts:
   - file: lp_intro
 - caption: Other
   chapters:
+  - file: build_info
   - file: troubleshooting
   - file: zreferences
   - file: status
