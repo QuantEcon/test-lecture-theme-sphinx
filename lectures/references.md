@@ -30,15 +30,15 @@ kernelspec:
 ## Targets and the `ref` role
 
 A target `(references-page)=` precedes this page's header, as one does on 293
-lecture files. The `{ref}` role reaches it in both forms: {ref}`references-page`
-(the page title is used) and {ref}`the references page <references-page>`
-(explicit text, the common form).
+lecture files. A page-level target sits before the notebook header, not on a
+heading, so it is always referenced with explicit text, the common form
+(300 of 391 uses): {ref}`the references page <references-page>`. The plain form
+takes its text from a heading: {ref}`a-section-target`.
 
 (a-section-target)=
 ## A section with its own target
 
-Sections carry targets too: see {ref}`a-section-target` and
-{ref}`this section <a-section-target>`.
+Sections carry targets too: see {ref}`this section <a-section-target>`.
 
 ## The `doc` role
 
@@ -72,8 +72,8 @@ The `{download}` role offers a file from the repository:
 ## The `any` role
 
 Three uses in one series (and its translations) reach a label with the
-`{any}` role: {any}`the typography page <typography>`. mystmd reports it as an
-unknown role.
+`{any}` role: {any}`the section above <a-section-target>`. mystmd reports it
+as an unknown role.
 
 ## Footnotes
 

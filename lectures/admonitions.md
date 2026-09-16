@@ -39,7 +39,7 @@ A note. Notes carry lists, maths and code:
 
 ```{note}
 :name: iid_violation
-A named note, so it can be referred to: {ref}`iid_violation`.
+A named note, so it can be referred to: {ref}`the named note <iid_violation>`.
 ```
 
 ```{warning}
