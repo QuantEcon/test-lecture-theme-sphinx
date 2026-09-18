@@ -9,24 +9,58 @@ on:
 jobs:
   preview:
     runs-on: ubuntu-latest
+    # The build image, pinned by digest (theme-parity decision D14). This is
+    # the index digest that the `latest` and `main-195b9f2` tags named on
+    # 2026-09-18: built that day from QuantEcon/actions@195b9f2 (Node 24, QuantEcon/actions#166)
+    # (containers/quantecon-build/), amd64 only. The image rebuilds every
+    # Monday and its tags move; the digest does not. Under D14 the mystmd
+    # corpus builds in the same digest, so both corpora execute on one kernel:
+    # bump the two repositories together. `container.image` cannot read
+    # `env`, so the ref is written twice; keep the two lines identical.
+    # build_info.md prints QE_CONTAINER.
     container:
-      image: ghcr.io/quantecon/quantecon-build:latest
+      image: ghcr.io/quantecon/quantecon-build@sha256:937af97c5b9185877cc53cded64d002df6d6ce5e561467931add2a029baada93
+    env:
+      QE_CONTAINER: ghcr.io/quantecon/quantecon-build@sha256:937af97c5b9185877cc53cded64d002df6d6ce5e561467931add2a029baada93
     permissions:
       contents: read
       packages: read
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Restore Build Cache
-        id: cache
-        uses: quantecon/actions/restore-jupyter-cache@v0
+        uses: actions/checkout@v7
         with:
-          cache-type: 'build'
-          source-dir: 'lectures'
-          save-cache: 'true'
+          # Full history: each page's "Last changed" date and changelog come
+          # from git log. A shallow clone dates every page to the checkout commit.
+          fetch-depth: 0
 
+      # The runner owns the checkout (uid 1001) and container steps run as
+      # root, so git refuses the work tree unless it is trusted, and
+      # quantecon-book-theme then drops every page's "Last changed" header
+      # without a warning. The image now trusts every work tree at system scope
+      # (QuantEcon/actions#165), so this is a backstop against an image that
+      # loses that entry: it writes $HOME/.gitconfig, which every later step
+      # reads. The shell's $GITHUB_WORKSPACE is the in-container path (the
+      # github.workspace expression gives the host's). The last line fails
+      # here, rather than silently in the theme, if git still cannot read it.
+      - name: Trust the checkout (backstop)
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git log -1 --format='checkout %h (%cs)'
+
+      # The key hashes environment.yml, not the image digest, and
+      # .jupyter_cache is keyed on cell source. A pull request that moves the
+      # digest can therefore restore outputs executed in the previous image;
+      # read its build_info as the new kernel only from a run that reports
+      # "No cache found" here.
+      # No build cache, deliberately. A restored _build carries each page's
+      # executed output from whichever run last executed it, so build_info
+      # would report that run's image, Node, commit and build time rather than
+      # this one's -- and the cache key (environment.yml, not the image digest)
+      # does not change when the image does. Observed on this repository: after
+      # the image was re-pinned, a cached preview still reported the old image.
+      # This corpus is 14 pages and builds in about three minutes; accurate
+      # provenance is the point of it. publish.yml never restored the cache.
       - name: Build Notebooks
         uses: quantecon/actions/build-lectures@v0
         with:
@@ -42,6 +76,18 @@ jobs:
           builder: 'html'
           html-copy-notebooks: true
           upload-failure-reports: true
+
+      # The built site, so a pull request can be inspected before it merges:
+      # `gh run download <run-id> -n sphinx-html`, then open intro.html. Until
+      # the Netlify secrets below are set, this is the only preview there is.
+      - name: Upload the built site
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: sphinx-html
+          path: ${{ steps.build.outputs.build-path }}
+          if-no-files-found: error
+          retention-days: 7
 
       # Netlify secrets are per-repository. Neither is set on this repository,
       # so without the guard below this step fails every pull request -- which
