@@ -43,10 +43,16 @@ jobs:
           html-copy-notebooks: true
           upload-failure-reports: true
 
-      # Netlify secrets are per-repository; until they are set this step is
-      # the only one that can fail on a fork or a fresh clone.
+      # Netlify secrets are per-repository. Neither is set on this repository,
+      # so without the guard below this step fails every pull request -- which
+      # is what it did on the first one the repository ever had (#5). The
+      # `secrets` context cannot be read from a step-level `if`, so the site id
+      # is hoisted into `env` first; the mystmd corpus guards the same step the
+      # same way. With no secret the step is skipped and the run stays green.
       - name: Deploy to Netlify
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && env.NETLIFY_SITE_ID != '' }}
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         uses: quantecon/actions/preview-netlify@v0
         with:
           build-dir: ${{ steps.build.outputs.build-path }}
