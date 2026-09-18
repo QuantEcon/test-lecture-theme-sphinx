@@ -100,15 +100,22 @@ except ImportError:
 def git(*args):
     """Return (output, problem): git's answer, or an empty string and the reason.
 
-    `-c safe.directory=*` is command-scope configuration, which git counts as
-    protected and therefore honours. Without it git refuses a work tree it does
-    not own -- the ordinary state inside a job container, where the runner
-    creates the workspace and the container runs as root. That refusal writes to
-    stderr and leaves stdout empty, which is how this row came to read
-    "unknown"; the reason is now reported rather than swallowed.
+    git refuses a work tree it does not own -- the ordinary state inside a job
+    container, where the runner creates the workspace and the container runs as
+    root. That refusal writes to stderr and leaves stdout empty, which is how
+    this row came to read "unknown"; the reason is now reported, not swallowed.
+
+    The exemption is scoped to this checkout. `-c` is command-scope
+    configuration, which git counts as protected and honours; GITHUB_WORKSPACE
+    is the checkout root on every Actions runner, and outside CI you own your
+    checkout and need none. It must name the worktree root, not the current
+    directory: this page runs in lectures/, and git refuses an exemption scoped
+    to a subdirectory.
     """
+    workspace = os.environ.get("GITHUB_WORKSPACE", "")
+    scope = ["-c", f"safe.directory={workspace}"] if workspace else []
     try:
-        out = subprocess.run(["git", "-c", "safe.directory=*", *args],
+        out = subprocess.run(["git", *scope, *args],
                              capture_output=True, text=True, timeout=30)
     except Exception as e:  # noqa: BLE001 - a build-info page must never fail the build
         return "", f"{type(e).__name__}: {e}"
