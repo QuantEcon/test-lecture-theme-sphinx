@@ -59,6 +59,18 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git log -1 --format='checkout %h (%cs)'
 
+      # The corpus's one package beyond the image, pinned and installed before
+      # any notebook executes. PIP_CONSTRAINT then holds it, so code_cells.md's
+      # `!pip install --upgrade quantecon` cannot move it: build_info reads the
+      # same version on both corpora whatever order the pages execute in (the
+      # mystmd engine runs them in parallel against this one env). Written via
+      # $GITHUB_ENV from the shell, because inside a container job the
+      # github.workspace expression is the host path, not this one.
+      - name: Install the corpus's pinned packages
+        run: |
+          python -m pip install --no-cache-dir -r lectures/requirements.txt
+          echo "PIP_CONSTRAINT=$GITHUB_WORKSPACE/lectures/requirements.txt" >> "$GITHUB_ENV"
+
       - name: Build Notebooks
         uses: quantecon/actions/build-lectures@v0
         with:
