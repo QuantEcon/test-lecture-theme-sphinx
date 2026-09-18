@@ -53,14 +53,14 @@ jobs:
       # digest can therefore restore outputs executed in the previous image;
       # read its build_info as the new kernel only from a run that reports
       # "No cache found" here.
-      - name: Restore Build Cache
-        id: cache
-        uses: quantecon/actions/restore-jupyter-cache@v0
-        with:
-          cache-type: 'build'
-          source-dir: 'lectures'
-          save-cache: 'true'
-
+      # No build cache, deliberately. A restored _build carries each page's
+      # executed output from whichever run last executed it, so build_info
+      # would report that run's image, Node, commit and build time rather than
+      # this one's -- and the cache key (environment.yml, not the image digest)
+      # does not change when the image does. Observed on this repository: after
+      # the image was re-pinned, a cached preview still reported the old image.
+      # This corpus is 14 pages and builds in about three minutes; accurate
+      # provenance is the point of it. publish.yml never restored the cache.
       - name: Build Notebooks
         uses: quantecon/actions/build-lectures@v0
         with:
