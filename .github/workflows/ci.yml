@@ -9,16 +9,50 @@ on:
 jobs:
   preview:
     runs-on: ubuntu-latest
+    # The build image, pinned by digest (theme-parity decision D14). This is
+    # the index digest that the `latest` and `main-3adfcf3` tags named on
+    # 2026-09-18: built that day from QuantEcon/actions@3adfcf3
+    # (containers/quantecon-build/), amd64 only. The image rebuilds every
+    # Monday and its tags move; the digest does not. Under D14 the mystmd
+    # corpus builds in the same digest, so both corpora execute on one kernel:
+    # bump the two repositories together. `container.image` cannot read
+    # `env`, so the ref is written twice; keep the two lines identical.
+    # build_info.md prints QE_CONTAINER.
     container:
-      image: ghcr.io/quantecon/quantecon-build:latest
+      image: ghcr.io/quantecon/quantecon-build@sha256:5d256c23d87fd97e510817724726e4896aed27dfeb23a6d53c58cc476e1cd7b9
+    env:
+      QE_CONTAINER: ghcr.io/quantecon/quantecon-build@sha256:5d256c23d87fd97e510817724726e4896aed27dfeb23a6d53c58cc476e1cd7b9
     permissions:
       contents: read
       packages: read
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          # Full history: each page's "Last changed" date and changelog come
+          # from git log. A shallow clone dates every page to the checkout commit.
+          fetch-depth: 0
 
+      # The runner owns the checkout (uid 1001) and container steps run as
+      # root, so git refuses the work tree unless it is trusted, and
+      # quantecon-book-theme then drops every page's "Last changed" header
+      # without a warning. The image now trusts every work tree at system scope
+      # (QuantEcon/actions#165), so this is a backstop against an image that
+      # loses that entry: it writes $HOME/.gitconfig, which every later step
+      # reads. The shell's $GITHUB_WORKSPACE is the in-container path (the
+      # github.workspace expression gives the host's). The last line fails
+      # here, rather than silently in the theme, if git still cannot read it.
+      - name: Trust the checkout (backstop)
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git log -1 --format='checkout %h (%cs)'
+
+      # The key hashes environment.yml, not the image digest, and
+      # .jupyter_cache is keyed on cell source. A pull request that moves the
+      # digest can therefore restore outputs executed in the previous image;
+      # read its build_info as the new kernel only from a run that reports
+      # "No cache found" here.
       - name: Restore Build Cache
         id: cache
         uses: quantecon/actions/restore-jupyter-cache@v0
@@ -42,6 +76,18 @@ jobs:
           builder: 'html'
           html-copy-notebooks: true
           upload-failure-reports: true
+
+      # The built site, so a pull request can be inspected before it merges:
+      # `gh run download <run-id> -n sphinx-html`, then open intro.html. Until
+      # the Netlify secrets below are set, this is the only preview there is.
+      - name: Upload the built site
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: sphinx-html
+          path: ${{ steps.build.outputs.build-path }}
+          if-no-files-found: error
+          retention-days: 7
 
       # Netlify secrets are per-repository. Neither is set on this repository,
       # so without the guard below this step fails every pull request -- which

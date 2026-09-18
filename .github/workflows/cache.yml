@@ -11,15 +11,37 @@ concurrency:
 jobs:
   build-cache:
     runs-on: ubuntu-latest
+    # The build image, pinned by digest (theme-parity decision D14). This is
+    # the index digest that the `latest` and `main-3adfcf3` tags named on
+    # 2026-09-18: built that day from QuantEcon/actions@3adfcf3
+    # (containers/quantecon-build/), amd64 only. The image rebuilds every
+    # Monday and its tags move; the digest does not. Under D14 the mystmd
+    # corpus builds in the same digest, so both corpora execute on one kernel:
+    # bump the two repositories together. `container.image` cannot read
+    # `env`, so the ref is written twice; keep the two lines identical.
+    # build_info.md prints QE_CONTAINER.
     container:
-      image: ghcr.io/quantecon/quantecon-build:latest
+      image: ghcr.io/quantecon/quantecon-build@sha256:5d256c23d87fd97e510817724726e4896aed27dfeb23a6d53c58cc476e1cd7b9
+    env:
+      QE_CONTAINER: ghcr.io/quantecon/quantecon-build@sha256:5d256c23d87fd97e510817724726e4896aed27dfeb23a6d53c58cc476e1cd7b9
     permissions:
       contents: read
       issues: write
       packages: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          # Full history: each page's "Last changed" date and changelog come
+          # from git log. A shallow clone dates every page to the checkout commit.
+          fetch-depth: 0
+      # A backstop: the image now trusts every work tree at system scope
+      # (QuantEcon/actions#165); this guards against an image that loses that
+      # entry. publish.yml says why git needs it.
+      - name: Trust the checkout (backstop)
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git log -1 --format='checkout %h (%cs)'
       - name: Build and Cache
         uses: quantecon/actions/build-jupyter-cache@v0
         with:
