@@ -12,8 +12,8 @@ jobs:
   build-cache:
     runs-on: ubuntu-latest
     # The build image, pinned by digest (theme-parity decision D14). This is
-    # the index digest that the `latest` and `main-3adfcf3` tags named on
-    # 2026-09-18: built that day from QuantEcon/actions@3adfcf3
+    # the index digest that the `latest` and `main-195b9f2` tags named on
+    # 2026-09-18: built that day from QuantEcon/actions@195b9f2 (Node 24, QuantEcon/actions#166)
     # (containers/quantecon-build/), amd64 only. The image rebuilds every
     # Monday and its tags move; the digest does not. Under D14 the mystmd
     # corpus builds in the same digest, so both corpora execute on one kernel:
@@ -21,9 +21,9 @@ jobs:
     # `env`, so the ref is written twice; keep the two lines identical.
     # build_info.md prints QE_CONTAINER.
     container:
-      image: ghcr.io/quantecon/quantecon-build@sha256:5d256c23d87fd97e510817724726e4896aed27dfeb23a6d53c58cc476e1cd7b9
+      image: ghcr.io/quantecon/quantecon-build@sha256:937af97c5b9185877cc53cded64d002df6d6ce5e561467931add2a029baada93
     env:
-      QE_CONTAINER: ghcr.io/quantecon/quantecon-build@sha256:5d256c23d87fd97e510817724726e4896aed27dfeb23a6d53c58cc476e1cd7b9
+      QE_CONTAINER: ghcr.io/quantecon/quantecon-build@sha256:937af97c5b9185877cc53cded64d002df6d6ce5e561467931add2a029baada93
     permissions:
       contents: read
       issues: write
