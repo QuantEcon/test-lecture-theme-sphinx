@@ -1,6 +1,6 @@
 # test-lecture-theme-sphinx
 
-*A representative corpus of the MyST constructs the QuantEcon Python lecture series use, built with Jupyter Book 1 and `quantecon-book-theme` through the same composite actions a production lecture repository runs, in the build image both corpora share. Its sibling, [`test-lecture-theme-mystmd`](https://github.com/QuantEcon/test-lecture-theme-mystmd), builds the same content on the mystmd stack; the two are compared feature by feature to check parity and to find styling improvements and regressions before the lectures cut over.*
+*A representative corpus of the MyST constructs the QuantEcon Python lecture series use, built with Jupyter Book 1 and `quantecon-book-theme` through the same composite actions a production lecture repository runs, in the build image that both corpora share. Its sibling, [`test-lecture-theme-mystmd`](https://github.com/QuantEcon/test-lecture-theme-mystmd), builds the same content on the mystmd stack; the two are compared feature by feature to check parity and to find styling improvements and regressions before the lectures cut over.*
 
 Last updated: 2026-09-19
 
