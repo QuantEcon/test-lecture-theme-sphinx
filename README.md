@@ -1,8 +1,8 @@
 # test-lecture-theme-sphinx
 
-*A representative corpus of the MyST constructs the QuantEcon Python lecture series use, built with Jupyter Book 1 and `quantecon-book-theme` exactly as a production lecture repository builds. Its sibling, [`test-lecture-theme-mystmd`](https://github.com/QuantEcon/test-lecture-theme-mystmd), builds the same content on the mystmd stack; the two are compared feature by feature to check parity and to find styling improvements and regressions before the lectures cut over.*
+*A representative corpus of the MyST constructs the QuantEcon Python lecture series use, built with Jupyter Book 1 and `quantecon-book-theme` through the same composite actions a production lecture repository runs, in the build image both corpora share. Its sibling, [`test-lecture-theme-mystmd`](https://github.com/QuantEcon/test-lecture-theme-mystmd), builds the same content on the mystmd stack; the two are compared feature by feature to check parity and to find styling improvements and regressions before the lectures cut over.*
 
-Last updated: 2026-09-16
+Last updated: 2026-09-19
 
 > **This is a test repository.** Nothing here is a lecture. Do not link to it from a lecture site.
 
@@ -30,7 +30,7 @@ Deliberately not in the corpus because no lecture uses them: Markdown images (`!
 
 ## Building
 
-The build environment is the production one (`environment.yml` pins the same versions the lecture repositories pin):
+CI builds inside `ghcr.io/quantecon/quantecon-build`, pinned by digest in `.github/workflows/`: the same image the mystmd corpus uses, so the two corpora run one kernel (theme-parity decision D14), and `build_info` prints the digest. `environment.yml` pins the versions the lecture repositories pin, for a build outside the image:
 
 ```bash
 pip install jupyter-book==1.0.4post1 quantecon-book-theme==0.22.0 sphinx-tojupyter==0.6.0 \
@@ -47,7 +47,7 @@ Code cells execute (`execute_notebooks: cache`), so the build needs a Python ker
 
 - **`test-lecture-theme-mystmd`** holds the same corpus for the mystmd stack. Its `lectures/` directory is *derived* from this one: the sync script there copies these sources at a pinned commit and applies the decided source rewrites (today, the theme's `rewrite-raw-blocks.mjs`). Edit content here; regenerate there.
 - **`quantecon-book-theme-fixtures`** is the Sphinx theme's own visual-regression target: twelve small synthetic pages pinned by SHA in the theme's CI. This corpus is broader (it is measured against the lecture sources, and it executes code) and is not pinned by the theme; the two are complementary and the fixtures repo is unchanged by this one.
-- **`workspace-themes`** holds the parity project's tracker and plan; `workspace-lectures` holds the generator that produced the counts above.
+- **`project-theme-parity`** holds the parity project's tracker (QuantEcon/project-theme-parity#2), its decisions and the measurement passes that compare the two live sites; `workspace-themes` holds the plan that seeded it, and `workspace-lectures` the generator that produced the counts above.
 
 ## Adding to the corpus
 
