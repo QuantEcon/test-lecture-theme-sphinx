@@ -2,7 +2,7 @@
 
 *A representative corpus of the MyST constructs the QuantEcon Python lecture series use, built with Jupyter Book 1 and `quantecon-book-theme` through the same composite actions a production lecture repository runs, in the build image that both corpora share. Its sibling, [`test-lecture-theme-mystmd`](https://github.com/QuantEcon/test-lecture-theme-mystmd), builds the same content on the mystmd stack; the two are compared feature by feature to check parity and to find styling improvements and regressions before the lectures cut over.*
 
-Last updated: 2026-09-19
+Last updated: 2026-09-21
 
 > **This is a test repository.** Nothing here is a lecture. Do not link to it from a lecture site.
 
@@ -12,15 +12,18 @@ The pages under `lectures/` are organised by construct family. Each page opens w
 
 | Page | Family | Constructs |
 | --- | --- | --- |
-| `typography.md` | text and page structure | headings to h5, inline formatting, footnotes, lists, definition list, block quotes (including quoted display maths), pipe tables, `+++` block breaks, `%` and HTML comments, inline HTML, `{only} html`/`latex`, `{index}` directive and role, `{contents}`, `{epigraph}` |
-| `math.md` | mathematics | inline and display maths, `$$ (label)` and `{math}` labels with `{eq}`, the environments in use (`aligned`, `bmatrix`, `pmatrix`, `matrix`, `array`, `cases`, `split`), bare `amsmath` environments, the theme-injected and config-defined macro sets, and five constructions MathJax tolerates but KaTeX rejects |
+| `typography.md` | text and page structure | headings to h5, inline formatting, footnotes, lists, definition list, block quotes (including quoted display maths), pipe tables, `+++` block breaks, `%` and HTML comments, inline HTML (including the series' one `<style>` block and its one, commented-out, `<font>` element), `{only} html`/`latex`, `{index}` directive and role, `{contents}`, `{epigraph}` |
+| `math.md` | mathematics | inline and display maths, `$$ (label)` and `{math}` labels with `{eq}`, the environments in use (`aligned`, `bmatrix`, `pmatrix`, `matrix`, `array`, `cases`, `split`, `gathered`), bare `amsmath` environments (`align*`, `equation`, `align`, `equation*`), the theme-injected and config-defined macro sets, and five constructions MathJax tolerates but KaTeX rejects |
 | `references.md` | cross-references | `(target)=`, `{ref}`, `{doc}`, `{numref}`, `{prf:ref}`, `{cite}`, `{cite:t}`, `{cite:p}`, `{download}`, `{any}`, footnotes, index roles |
-| `code_cells.md` | executable cells | the four language names, every cell tag in use (`hide-input`, `hide-output`, `hide-cell`, `raises-exception`, `skip-execution`, `output_scroll`, `scroll-output`, `collapse-20`), `:load:`, `:caption:`/`:lineno-start:`, stdout and stderr streams, DataFrame output, plotly, IPython magics and help, `{code-block}` and plain fences |
+| `code_cells.md` | executable cells | the four language names, every cell tag in use (`hide-input`, `hide-output`, `hide-cell`, `raises-exception`, `skip-execution`, `output_scroll`, `scroll-output`, `collapse-20`, and `no-execute`, which neither stack knows), `hide-output` written as a cell option, `:load:`, `:caption:`/`:lineno-start:`, stdout and stderr streams, DataFrame output, plotly, IPython magics and help, `{code-block}` and plain fences |
+| `long_cells.md` | long inputs and outputs | the demonstration page for QuantEcon/project-theme-parity#19: one long input and one long output shown four ways (`collapse-20`, `scroll-input`, `scroll-output`, and the theme prototype's `collapse-output-20`), each cell captioned with its mechanism |
 | `figures.md` | figures and images | `{figure}` with every option in use, `{image}`, `mystnb` figure and image metadata on code cells, `glue`/`{glue:figure}`, `{youtube}`, a `{raw} html` iframe, an `<img>` in an HTML-only block |
+| `known_failures.md` | execution outcomes | a tagged error, a skipped cell, output on stderr, an untagged output longer than the scroll cap, wide and tall DataFrames, and last an **untagged** error, to show what each stack does with the cells after it. The page sets `execution_allow_errors` for itself: without it the `-W` build fails, which is the Sphinx stack's real answer |
 | `admonitions.md` | admonitions | `note` (plain and named), `warning`, `tip`, `hint` (plain and dropdown), `seealso`, titled `{admonition}` with a class, the shared `{include} _admonition/gpu.md`, `{epigraph}`, nested admonitions, `{todo}` |
 | `exercises.md` | sphinx-exercise | compact `{exercise}`/`{solution}` (folded and plain), titled exercises, gated `{exercise-start}`/`{exercise-end}` with code cells, gated solutions with `:class: dropdown` and `:label:`, `{hint}` inside an exercise, references to exercises |
 | `proofs.md` | sphinx-proof | every `prf:*` kind in use (definition, example, theorem, proof, lemma, proposition, assumption, corollary, remark, property, algorithm), `{prf:ref}`, and the capitalised `{prf:Theorem}` |
-| `lp_intro.md`, `troubleshooting.md` | real lectures | captured verbatim from `lecture-python-intro` (the linear programming lecture carries 13 of the 36 display blocks that fail in KaTeX) |
+| `lp_intro.md`, `troubleshooting.md` | real lectures | captured verbatim from `lecture-python-intro` by `bin/capture`, which records the source commit in `CAPTURES.yml` (the linear programming lecture carries 13 of the 36 display blocks that fail in KaTeX) |
+| `mystmd_native.md` | mystmd-only | `lecture-wasm`'s convention: `:label:` on a code cell, embedded by `{figure} #label` with its own `:label:` and caption. **Not in `_toc.yml`, so this build never reads it** (the form is an error in Sphinx); it is kept here because the corpus is edited here, and the mystmd corpus lists it |
 | `intro.md`, `status.md`, `zreferences.md` | the standard pages | `{tableofcontents}`, `{nb-exec-table}`, `{bibliography}` |
 | `build_info.md` | build record | generated at build time by its own code cells: the engine, theme and library versions, the repository commit and (on the mystmd side) the derivation record, so the comparison harness knows what built the site it reads |
 
@@ -51,7 +54,11 @@ Code cells execute (`execute_notebooks: cache`), so the build needs a Python ker
 
 ## Adding to the corpus
 
-Add a construct to the page of its family, with a comment naming the lecture it came from, and keep it small enough to debug when it breaks. If it needs a static asset, put it under `_static/lecture_specific/<page>/`. Then regenerate the mystmd sibling and open one PR in each repository.
+Add a construct to the page of its family, with a comment naming the lecture and commit it came from, and keep it small enough to debug when it breaks. If it needs a static asset, put it under `_static/lecture_specific/<page>/`. Then regenerate the mystmd sibling and open one PR in each repository: this one first, because the sibling's `sync-check` re-derives from a commit on this repository's history.
+
+Snippets are the rule. The two verbatim pages are never edited by hand: `bin/capture <lecture-python-intro checkout> [<commit>]` re-copies them and their static files from a named commit, writes the header under each page's frontmatter, and records `(repo, path, commit, date)` in `CAPTURES.yml`. It stops, and changes nothing, when a page refers to a file the source commit does not carry.
+
+Which of the constructs the lectures use are present here is not recorded in this repository. Coverage is a property of an inventory version and a corpus version, so the parity project computes it in each measurement pass (`bin/coverage`, QuantEcon/project-theme-parity#7) and its [passes](https://github.com/QuantEcon/project-theme-parity/tree/main/passes) carry the report.
 
 ## Provenance and licence
 
