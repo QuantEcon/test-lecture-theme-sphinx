@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""Re-capture the corpus's verbatim lecture pages from their source repository.
+
+Two pages of this corpus are real lectures, kept verbatim as the realism
+fixtures (QuantEcon/test-lecture-theme-sphinx#2): everything else is a
+synthetic snippet. This script copies each of them from a checkout of the
+source repository at a named commit, copies the static files the page refers
+to, writes a generated provenance header under the page's frontmatter, and
+records (repo, path, commit, date) in CAPTURES.yml.
+
+    bin/capture <path-to-lecture-python-intro-checkout> [<commit>]
+
+The commit defaults to the checkout's HEAD. Pages and files are read from the
+commit with `git show`, never from the working tree, so a dirty or
+branch-switched checkout cannot leak into the corpus.
+
+It never edits the lecture. A referenced static file that is not in the source
+commit, or an `{include}` target this corpus does not carry, stops the capture
+with an error and leaves the corpus as it was.
+"""
+import datetime, pathlib, re, subprocess, sys
+
+HERE = pathlib.Path(__file__).resolve().parent.parent
+LECTURES = HERE / "lectures"
+RECORD = HERE / "CAPTURES.yml"
+# The verbatim pages, by decision. Adding one is a decision on the tracker, not an edit here.
+PAGES = ["lp_intro.md", "troubleshooting.md"]
+LICENCE = "CC BY-SA 4.0"
+STATIC_REF = re.compile(r"(?<![\w/.-])/?(_static/[\w./+-]+\.[A-Za-z0-9]+)")
+INCLUDE = re.compile(r"^\s*(?:`{3,}|:{3,})\{(?:include|literalinclude)\}\s+(\S+)", re.M)
+
+
+def git(checkout, *args, binary=False):
+    out = subprocess.run(["git", "-C", str(checkout), *args], capture_output=True)
+    if out.returncode:
+        raise SystemExit(f"capture: git {' '.join(args)} failed: {out.stderr.decode().strip()}")
+    return out.stdout if binary else out.stdout.decode()
+
+
+def in_commit(checkout, commit, path):
+    return subprocess.run(["git", "-C", str(checkout), "cat-file", "-e", f"{commit}:{path}"],
+                          capture_output=True).returncode == 0
+
+
+def source_slug(checkout):
+    url = git(checkout, "remote", "get-url", "origin").strip()
+    m = re.search(r"github\.com[:/]+([^/]+/[^/]+?)(?:\.git)?$", url)
+    if not m:
+        raise SystemExit(f"capture: cannot read an owner/repo from the checkout's origin: {url}")
+    return m.group(1)
+
+
+def previous_record():
+    """CAPTURES.yml as {page: {key: value}} -- it is written below, in one shape, so a regex reads it."""
+    if not RECORD.exists():
+        return {}
+    pages, page = {}, None
+    for line in RECORD.read_text().splitlines():
+        if m := re.match(r"^  - page: (\S+)$", line):
+            page = pages.setdefault(m.group(1), {})
+        elif page is not None and (m := re.match(r"^    (\w+): (.+)$", line)):
+            page[m.group(1)] = m.group(2)
+    return pages
+
+
+def with_header(text, header):
+    """Put the generated header under the frontmatter (the source page carries none)."""
+    m = re.match(r"\A---\n.*?\n---\n", text, re.S)
+    if not m:
+        raise SystemExit("capture: a page without jupytext frontmatter is not a lecture page")
+    return text[:m.end()] + "\n" + header + text[m.end():]
+
+
+def main():
+    if len(sys.argv) not in (2, 3) or sys.argv[1] in ("-h", "--help"):
+        raise SystemExit(__doc__)
+    checkout = pathlib.Path(sys.argv[1]).resolve()
+    commit = git(checkout, "rev-parse", (sys.argv[2] if len(sys.argv) == 3 else "HEAD") + "^{commit}").strip()
+    commit_date = git(checkout, "show", "-s", "--format=%cs", commit).strip()
+    slug = source_slug(checkout)
+    today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+    before = previous_record()
+
+    # Read everything and check every reference before writing anything.
+    writes, record = [], []
+    for page in PAGES:
+        src = f"lectures/{page}"
+        if not in_commit(checkout, commit, src):
+            raise SystemExit(f"capture: {slug} has no {src} at {commit[:8]}")
+        text = git(checkout, "show", f"{commit}:{src}")
+        statics = sorted(set(STATIC_REF.findall(text)))
+        for ref in statics:
+            if not in_commit(checkout, commit, f"lectures/{ref}"):
+                raise SystemExit(f"capture: {page} refers to {ref}, which {slug} does not carry at {commit[:8]}; "
+                                 "the lecture is not edited here -- fix it upstream or capture another commit")
+        for inc in INCLUDE.findall(text):
+            if not inc.startswith("_static/") and not (LECTURES / inc).exists():
+                raise SystemExit(f"capture: {page} includes {inc}, which this corpus does not carry")
+        old = before.get(page, {})
+        captured = old.get("captured", today) if old.get("commit") == commit else today
+        header = (f"% Captured verbatim by bin/capture from {slug} {src} @ {commit[:8]} ({commit_date}), on {captured} ({LICENCE}).\n"
+                  "% Real lecture: do not edit here; re-run bin/capture. Recorded in CAPTURES.yml.\n\n")
+        writes.append((LECTURES / page, with_header(text, header).encode()))
+        writes += [(LECTURES / ref, git(checkout, "show", f"{commit}:lectures/{ref}", binary=True)) for ref in statics]
+        record.append((page, src, captured, statics))
+
+    for path, data in writes:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+
+    out = ["# Generated by bin/capture -- do not edit. The corpus's verbatim lecture pages and",
+           "# where each was copied from; every other page is a synthetic snippet page.",
+           "# Dates are UTC.",
+           "captures:"]
+    for page, src, captured, statics in record:
+        out += [f"  - page: {page}", f"    repo: {slug}", f"    path: {src}", f"    commit: {commit}",
+                f"    commit_date: {commit_date}", f"    captured: {captured}", f"    licence: {LICENCE}",
+                "    static_files:" + ("" if statics else " []")]
+        out += [f"      - {s}" for s in statics]
+    RECORD.write_text("\n".join(out) + "\n")
+    for page, _, captured, statics in record:
+        print(f"captured {page} from {slug} @ {commit[:8]} ({len(statics)} static file(s))")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,7 @@
 # Table of contents: `jb-book` with numbered parts, the shape every lecture
 # repo uses (sphinx_multitoc_numbering numbers chapters across parts).
+# Not listed on purpose: mystmd_native.md has no Sphinx counterpart. With
+# only_build_toc_files this build never reads it; the mystmd corpus lists it.
 format: jb-book
 root: intro
 parts:
@@ -13,7 +15,9 @@ parts:
   numbered: true
   chapters:
   - file: code_cells
+  - file: long_cells
   - file: figures
+  - file: known_failures
 - caption: Directive Families
   numbered: true
   chapters:
