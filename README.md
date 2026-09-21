@@ -44,7 +44,7 @@ jb build lectures
 open lectures/_build/html/index.html
 ```
 
-Code cells execute (`execute_notebooks: cache`), so the build needs a Python kernel with `numpy`, `matplotlib`, `pandas`, `scipy`, `plotly` and `quantecon`. CI runs the same composite actions the lecture repositories run (`quantecon/actions@v0`, in the `quantecon-build` container); `publish.yml` deploys every push to `main` to GitHub Pages rather than waiting for a `publish*` tag, because the comparison harness reads the live site.
+Code cells execute (`execute_notebooks: cache`), so the build needs a Python kernel with `numpy`, `matplotlib`, `pandas`, `scipy`, `plotly` and `quantecon`. CI runs the same composite actions the lecture repositories run (`quantecon/actions@v0`, in the `quantecon-build` container); `publish.yml` deploys every push to `main` to GitHub Pages rather than waiting for a `publish*` tag, because the comparison harness reads the live site. It also publishes the engine's own output beside the site: the docutils XML of every page, at `/_xml/<page>.xml`, which the parity project's structural layer compares with mystmd's page AST. CI builds it after the HTML with `jb build lectures --path-output . --builder custom --custom-builder xml -W --keep-going` (the same `--path-output` as the HTML build, so it reuses the execution cache and runs nothing again) and copies `_build/xml/*.xml` into the HTML tree's `_xml/`. Locally, after `jb build lectures`, the same command without `--path-output .` writes `lectures/_build/xml/`.
 
 ## Relationship to other repositories
 
