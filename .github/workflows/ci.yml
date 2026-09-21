@@ -89,6 +89,20 @@ jobs:
           html-copy-notebooks: true
           upload-failure-reports: true
 
+      # The engine's own output, beside the site (QuantEcon/test-lecture-theme-sphinx#3,
+      # theme-parity decision D9): the docutils XML for every page, which the parity
+      # project's structural layer compares with mystmd's page AST -- never one
+      # theme's DOM with the other's. Built after the HTML so it reuses the
+      # execution cache under ./_build (the same --path-output the action uses), and
+      # under -W like every other build here. It lands in the HTML tree, so it is
+      # published at /_xml/<page>.xml, and a pull request that breaks the XML build fails here rather than at publish.
+      - name: Build the docutils XML and place it under /_xml/
+        run: |
+          jb build lectures --path-output . --builder custom --custom-builder xml -W --keep-going
+          mkdir -p "${{ steps.build.outputs.build-path }}/_xml"
+          cp _build/xml/*.xml "${{ steps.build.outputs.build-path }}/_xml/"
+          ls "${{ steps.build.outputs.build-path }}/_xml" | wc -l
+
       # The built site, so a pull request can be inspected before it merges:
       # `gh run download <run-id> -n sphinx-html`, then open intro.html. Until
       # the Netlify secrets below are set, this is the only preview there is.
