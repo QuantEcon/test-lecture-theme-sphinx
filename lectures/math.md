@@ -73,6 +73,16 @@ number inside a formula, $x_1 = 2.5$. A negative number on its own, $-0.5$, and
 inside a formula, $x_2 = -0.5$. A tolerance of $10^{-6}$, and the same power
 inside a formula, $\epsilon = 10^{-6}$.
 
+The same pairs aligned, for a closer look at the digits and the minus sign:
+
+| On its own | Inside a formula |
+| --- | --- |
+| $1$ | $c < 1$ |
+| $-1$ | $c > -1$ |
+| $2.5$ | $x_1 = 2.5$ |
+| $-0.5$ | $x_2 = -0.5$ |
+| $10^{-6}$ | $\epsilon = 10^{-6}$ |
+
 ## Environments
 
 Aligned equations:
