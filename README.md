@@ -8,7 +8,7 @@ Last updated: 2026-11-18
 
 ## What is in the corpus
 
-The pages under `lectures/` are organised by construct family. Each page opens with a comment naming the lectures its examples were taken from, and every count below comes from a scan of the eight lecture repositories on 2026-09-16 (`workspace-lectures`, `bin/feature-inventory`).
+The pages under `lectures/` are organised by construct family. Each page opens with a comment naming the lectures its examples were taken from, and the constructs below come from scans of the eight lecture repositories by `workspace-lectures`' `bin/feature-inventory`: the scan of 2026-09-16, plus the `important` admonition and the unnumbered `:nonumber:` proposition from the inventory taken for the 2026-11-18 theme-parity pass.
 
 | Page | Family | Constructs |
 | --- | --- | --- |
