@@ -2,13 +2,13 @@
 
 *A representative corpus of the MyST constructs the QuantEcon Python lecture series use, built with Jupyter Book 1 and `quantecon-book-theme` through the same composite actions a production lecture repository runs, in the build image that both corpora share. Its sibling, [`test-lecture-theme-mystmd`](https://github.com/QuantEcon/test-lecture-theme-mystmd), builds the same content on the mystmd stack; the two are compared feature by feature to check parity and to find styling improvements and regressions before the lectures cut over.*
 
-Last updated: 2026-09-21
+Last updated: 2026-11-18
 
 > **This is a test repository.** Nothing here is a lecture. Do not link to it from a lecture site.
 
 ## What is in the corpus
 
-The pages under `lectures/` are organised by construct family. Each page opens with a comment naming the lectures its examples were taken from, and every count below comes from a scan of the eight lecture repositories on 2026-09-16 (`workspace-lectures`, `bin/feature-inventory`).
+The pages under `lectures/` are organised by construct family. Each page opens with a comment naming the lectures its examples were taken from, and the constructs below come from scans of the eight lecture repositories by `workspace-lectures`' `bin/feature-inventory`: the scan of 2026-09-16, plus the `important` admonition and the unnumbered `:nonumber:` proposition from the inventory taken for the 2026-11-18 theme-parity pass.
 
 | Page | Family | Constructs |
 | --- | --- | --- |
@@ -19,9 +19,9 @@ The pages under `lectures/` are organised by construct family. Each page opens w
 | `long_cells.md` | long inputs and outputs | the demonstration page for QuantEcon/project-theme-parity#19: one long input and one long output shown four ways (`collapse-20`, `scroll-input`, `scroll-output`, and the theme prototype's `collapse-output-20`), each cell captioned with its mechanism |
 | `figures.md` | figures and images | `{figure}` with every option in use, `{image}`, `mystnb` figure and image metadata on code cells, `glue`/`{glue:figure}`, `{youtube}`, a `{raw} html` iframe, an `<img>` in an HTML-only block |
 | `known_failures.md` | execution outcomes | a tagged error, a skipped cell, output on stderr, an untagged output longer than the scroll cap, wide and tall DataFrames, and last an **untagged** error, to show what each stack does with the cells after it. The page sets `execution_allow_errors` for itself: without it the `-W` build fails, which is the Sphinx stack's real answer |
-| `admonitions.md` | admonitions | `note` (plain and named), `warning`, `tip`, `hint` (plain and dropdown), `seealso`, titled `{admonition}` with a class, the shared `{include} _admonition/gpu.md`, `{epigraph}`, nested admonitions, `{todo}` |
+| `admonitions.md` | admonitions | `note` (plain and named), `warning`, `tip`, `important`, `hint` (plain and dropdown), `seealso`, titled `{admonition}` with a class, the shared `{include} _admonition/gpu.md`, `{epigraph}`, nested admonitions, `{todo}` |
 | `exercises.md` | sphinx-exercise | compact `{exercise}`/`{solution}` (folded and plain), titled exercises, gated `{exercise-start}`/`{exercise-end}` with code cells, gated solutions with `:class: dropdown` and `:label:`, `{hint}` inside an exercise, references to exercises |
-| `proofs.md` | sphinx-proof | every `prf:*` kind in use (definition, example, theorem, proof, lemma, proposition, assumption, corollary, remark, property, algorithm), `{prf:ref}`, and the capitalised `{prf:Theorem}` |
+| `proofs.md` | sphinx-proof | every `prf:*` kind in use (definition, example, theorem, proof, lemma, proposition, assumption, corollary, remark, property, algorithm), an unnumbered `:nonumber:` proposition, `{prf:ref}`, and the capitalised `{prf:Theorem}` |
 | `lp_intro.md`, `troubleshooting.md` | real lectures | captured verbatim from `lecture-python-intro` by `bin/capture`, which records the source commit in `CAPTURES.yml` (the linear programming lecture carries 13 of the 36 display blocks that fail in KaTeX) |
 | `mystmd_native.md` | mystmd-only | `lecture-wasm`'s convention: `:label:` on a code cell, embedded by `{figure} #label` with its own `:label:` and caption. **Not in `_toc.yml`, so this build never reads it** (the form is an error in Sphinx); it is kept here because the corpus is edited here, and the mystmd corpus lists it |
 | `intro.md`, `status.md`, `zreferences.md` | the standard pages | `{tableofcontents}`, `{nb-exec-table}`, `{bibliography}` |
