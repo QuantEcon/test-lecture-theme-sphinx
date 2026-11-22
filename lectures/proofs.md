@@ -166,8 +166,9 @@ a nonnegative eigenvector.
 
 % Cases for the theme-parity harness (QuantEcon/project-theme-parity#36's
 % review), not lecture constructs. Sphinx gives an unlabelled block a generated
-% label (`theorem-0`, `example-1`), which the labelled-block counts must not
-% take for an author's label. Placed last so the blocks above keep their numbers.
+% label, the kind and the page's serial (here `theorem-13` and `example-14`),
+% which the labelled-block counts must not take for an author's label. Placed
+% last so the blocks above keep their numbers.
 
 Most blocks carry a label, but some are written without one:
 
@@ -176,5 +177,5 @@ Every contraction on a complete metric space has exactly one fixed point.
 ```
 
 ```{prf:example}
-The map $x \mapsto x/2$ on $\mathbb{R}$ is a contraction, and its fixed point is $0$.
+Halving every real number is a contraction, and zero is its only fixed point.
 ```

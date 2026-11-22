@@ -89,19 +89,10 @@ often confused in a rendering check.
 
 Index roles also appear in running text: {index}`Bellman equation <single: Bellman equation>`.
 
-% Cases for the theme-parity harness (QuantEcon/project-theme-parity#36's
-% review), not lecture constructs: a section whose anchor is also the id of a
-% proof block on another page, and links to other sites whose fragment is a
-% corpus label or an equation anchor. None of them is a reference to a proof
-% block or an equation on this site.
-
-(cor_unique)=
-## A section whose anchor matches a proof label
-
-This section's label differs from the corollary's on the proofs page by one
-character, and docutils writes both anchors as `cor-unique`. A reference to it,
-{ref}`the section with that anchor <cor_unique>`, reaches this section, not the
-corollary.
+% A case for the theme-parity harness (QuantEcon/project-theme-parity#36's
+% review), not a lecture construct: links to other sites whose fragment is a
+% corpus label or an equation anchor. Neither is a reference to a proof block
+% or an equation on this site.
 
 ## Links that leave the site
 
