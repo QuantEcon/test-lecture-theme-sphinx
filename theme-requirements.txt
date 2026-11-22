@@ -1,0 +1,9 @@
+# The Sphinx theme release this corpus measures, installed over the build image's copy.
+# The image is pinned by digest (theme-parity decision D14) and that digest carries
+# quantecon-book-theme 0.22.0; the theme is the one variable D14 lets move, so it is
+# pinned here rather than by re-pinning the image, which would move the kernel both
+# corpora share. Its dependencies are unchanged from 0.22.0 (pyproject.toml at v0.22.0
+# and v0.22.2), and CI installs it with --no-deps, so nothing else moves. Kept at the root, not in lectures/,
+# so bin/sync-from-sphinx does not carry it to the mystmd corpus. Bump it with
+# environment.yml and the README's pip line.
+quantecon-book-theme==0.22.2
