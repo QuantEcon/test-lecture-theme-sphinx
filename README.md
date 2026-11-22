@@ -2,7 +2,7 @@
 
 *A representative corpus of the MyST constructs the QuantEcon Python lecture series use, built with Jupyter Book 1 and `quantecon-book-theme` through the same composite actions a production lecture repository runs, in the build image that both corpora share. Its sibling, [`test-lecture-theme-mystmd`](https://github.com/QuantEcon/test-lecture-theme-mystmd), builds the same content on the mystmd stack; the two are compared feature by feature to check parity and to find styling improvements and regressions before the lectures cut over.*
 
-Last updated: 2026-11-18
+Last updated: 2026-11-22
 
 > **This is a test repository.** Nothing here is a lecture. Do not link to it from a lecture site.
 
@@ -33,10 +33,10 @@ Deliberately not in the corpus because no lecture uses them: Markdown images (`!
 
 ## Building
 
-CI builds inside `ghcr.io/quantecon/quantecon-build`, pinned by digest in `.github/workflows/`: the same image the mystmd corpus uses, so the two corpora run one kernel (theme-parity decision D14), and `build_info` prints the digest. `environment.yml` pins the versions the lecture repositories pin, for a build outside the image:
+CI builds inside `ghcr.io/quantecon/quantecon-build`, pinned by digest in `.github/workflows/`: the same image the mystmd corpus uses, so the two corpora run one kernel (theme-parity decision D14), and `build_info` prints the digest. The image carries quantecon-book-theme 0.22.0, so CI installs the release this corpus measures over it, from `theme-requirements.txt` (0.22.2); that moves nothing else, as its dependencies are unchanged. `environment.yml` pins the versions the lecture repositories pin, for a build outside the image:
 
 ```bash
-pip install jupyter-book==1.0.4post1 quantecon-book-theme==0.22.0 sphinx-tojupyter==0.6.0 \
+pip install jupyter-book==1.0.4post1 quantecon-book-theme==0.22.2 sphinx-tojupyter==0.6.0 \
     sphinxext-rediraffe==0.3.0 sphinx-exercise==1.2.1 sphinx-proof==0.4.0 \
     sphinxcontrib-youtube==1.5.0 sphinx-togglebutton==0.4.5 sphinx-reredirects==1.1.0 \
     quantecon plotly
