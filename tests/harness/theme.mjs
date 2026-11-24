@@ -4,7 +4,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import YAML from "yaml";
-import { settleBase, oneLine, said, sleep } from "./lib/util.mjs";
+import { SiteFault, press, settleBase, oneLine, said, sleep } from "./lib/util.mjs";
 import { MARKER_NAMES, errorMarkers } from "./lib/markers.mjs";
 import * as B from "./lib/behave.mjs";
 const { pass, fail, skip, yes } = B;
@@ -27,7 +27,7 @@ const behaviours = {
 
   async launch(c) {
     const { page } = c;
-    await c.part().first().click();
+    await press(c.part(), "the launch control");
     await page.locator("#settingsModal").waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
     const t = await page.evaluate(() => {
       const m = document.querySelector("#settingsModal");
@@ -55,7 +55,7 @@ const behaviours = {
   async "download-pdf"(c) {
     // headless Chromium has no print dialog: count the calls to window.print() the control makes
     await c.page.evaluate(() => { window.__harnessPrints = 0; window.print = () => { window.__harnessPrints++; }; });
-    await c.part().first().click();
+    await press(c.part(), "the Download PDF control");
     await sleep(400);
     const n = await c.page.evaluate(() => window.__harnessPrints);
     return n ? pass("activating it calls window.print(), which opens the print dialog (counted here: headless Chromium has no dialog)") : fail("activating it did not call window.print()");
@@ -63,12 +63,15 @@ const behaviours = {
 
   async search(c) {
     const { page } = c;
-    await c.part("control").first().click();
+    await press(c.part("control"), "the search control");
     const input = c.part("input").first();
     await input.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
     if (!(await input.isVisible())) return fail("the search control showed no input");
     await input.fill("Cagan");
-    await Promise.all([page.waitForNavigation({ timeout: 30_000 }), input.press("Enter")]);
+    await Promise.all([
+      page.waitForNavigation({ timeout: 30_000 }).catch(() => { throw new SiteFault("Enter in the search box opened no results page in 30 s"); }),
+      input.press("Enter"),
+    ]);
     await page.locator("ul.search li a").first().waitFor({ timeout: 30_000 }).catch(() => {});
     await sleep(500);
     const hrefs = await page.locator("ul.search li a").evaluateAll((as) => as.map((a) => a.href));
@@ -85,7 +88,7 @@ const behaviours = {
         li.getAttribute("data-tippy-content") || li.querySelector("[data-tippy-content]")?.getAttribute("data-tippy-content")
         || li.querySelector("[aria-label]")?.getAttribute("aria-label") || li.textContent.trim() || li.className || "?");
     });
-    await c.part("contents").first().click();
+    await press(c.part("contents"), "the contents control");
     await sleep(800);
     const opened = await page.evaluate(() => { const s = document.querySelector("#site-navigation"); if (!s) return false; const r = s.getBoundingClientRect(); return r.width > 0 && r.right > 0 && (s.checkVisibility ? s.checkVisibility({ visibilityProperty: true }) : getComputedStyle(s).visibility !== "hidden") && !s.classList.contains("inactive"); });
     const o = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
@@ -95,7 +98,7 @@ const behaviours = {
 
   async "contents-drawer"(c) {
     const { page } = c;
-    await c.part("toggle").first().click();
+    await press(c.part("toggle"), "the contents toggle");
     await sleep(900);
     const entries = await c.part("entries").evaluateAll((as) => as
       .filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && (e.checkVisibility ? e.checkVisibility({ visibilityProperty: true }) : getComputedStyle(e).visibility !== "hidden"); })
@@ -119,6 +122,7 @@ const behaviours = {
     const btn = c.part().first();
     const want = await btn.evaluate((b) => b.closest("a")?.href ?? null);
     const entry = btn.locator("xpath=ancestor::a[1]");
+    if (!(await entry.isVisible())) throw new SiteFault("the outline entry that holds the copy link is not shown");
     await entry.scrollIntoViewIfNeeded();
     await entry.hover();
     await sleep(400);
@@ -157,9 +161,9 @@ const behaviours = {
     const btn = c.part().first();
     const want = await btn.evaluate((b) => b.closest("div.highlight")?.querySelector("pre")?.innerText ?? null);
     await btn.evaluate((b) => b.closest("div.highlight")?.scrollIntoView({ block: "center" }));
-    await btn.locator("xpath=..").hover();
+    await btn.locator("xpath=..").hover().catch(() => {});
     await sleep(300);
-    await btn.click({ force: true });
+    await press(btn, "the copy button");
     await sleep(600);
     const clip = await B.clipboard(page);
     const norm = (s) => (s ?? "").split("\n").map((l) => l.replace(/\s+$/, "")).join("\n").trim();
@@ -188,7 +192,7 @@ const behaviours = {
     const btn = c.part().first();
     const content = btn.locator("xpath=..").locator(".stderr-content").first();
     const before = await content.isVisible();
-    await btn.click();
+    await press(btn, "the stderr toggle");
     await sleep(700);
     const after = await content.isVisible();
     const detail = `the stderr text on load: ${before ? "shown" : "hidden"}; after the toggle: ${after ? "shown" : "hidden"}`;

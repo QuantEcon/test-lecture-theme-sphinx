@@ -15,9 +15,9 @@ node run.mjs --dir ../../lectures/_build/html --base-path /test-lecture-theme-sp
 node run.mjs --url https://quantecon.github.io/test-lecture-theme-sphinx/                # the live site
 ```
 
-Both ways write `_harness/rendered.csv` and `_harness/provenance.json` at the repository root (`--out` to change it) and print the counts by check and result. A built site is served under the path the live site uses, `/test-lecture-theme-sphinx/`: some of this build's links are root-relative, and `download-notebook`'s answers 404 under the sub-path, so a site served at `/` would pass a check the live site fails. `--only id,id` runs those features alone, `--pages stem,stem` those pages, and `--no-pages` leaves out the page-wide checks.
+Both ways write `_harness/rendered.csv` and `_harness/provenance.json` at the repository root (`--out` to change it) and print the counts by check and result. A built site is served under the path the live site uses, `/test-lecture-theme-sphinx/`: some of this build's links are root-relative, and `download-notebook`'s answers 404 under the sub-path, so a site served at `/` would pass a check the live site fails. `--only id,id` runs those features alone, `--pages stem,stem` gives the page-wide checks those pages only (the behaviours still read the whole site's order), and `--no-pages` leaves out the page-wide checks.
 
-The exit status: 0 when every check ran, whatever it found; 1 when a check could not run (an `error` row, which is still written); 2 when nothing was checked (a bad argument, a locator table that does not parse, a site that cannot be served or does not answer).
+The exit status: 0 when every check ran, whatever it found; 1 when a check could not run (an `error` row, which is still written); 2 when nothing was checked (a bad argument, a locator table that does not parse, a site that cannot be served or does not answer, or a build made for another base: its home page's canonical link, or an asset it asks for, puts it somewhere other than the base it was given).
 
 ## What it checks
 
@@ -26,7 +26,7 @@ The exit status: 0 when every check ran, whatever it found; 1 when a check could
 
 **The colour scheme.** quantecon-book-theme reads one thing: `localStorage.setContrast`, `'1'` for dark (`layout.html`). It never reads `prefers-color-scheme`, so emulating that would record a light page as dark. Each context starts with the key in its storage, and before any check runs, the harness confirms the scheme took effect (`body.dark-theme` in dark, not in light); a page where it did not gives `error` rows.
 
-A check result is data: a failed feature check, a marker, a console message or an overflow is a row, not a failed job.
+A check result is data: a failed feature check, a marker, a console message or an overflow is a row, not a failed job. So is a control a behaviour has to operate and cannot, because it is not shown or will not take the click: that is `fail`, with the control named, where a behaviour that throws for any other reason is `error`. Links are fetched from the browser's context, each URL once a run; a link that gets no answer (no connection, a 429 rate limit or a 5xx, after two more tries) leaves its check `skip`, for a person, rather than `fail`.
 
 ## rendered.csv
 
@@ -51,7 +51,7 @@ One row per check, with the columns of QuantEcon/project-theme-parity#15, the sa
 | `skip` | the check ran but could not decide; `detail` says why, and what a person has to look at instead |
 | `error` | the check could not run: it threw, the page did not load, or the colour scheme did not take effect |
 
-`present` counts every part of a locator, as `<matched> (<visible> visible)`, and the first part decides `pass` or `absent`. The rows come in a fixed order: the features in the table's order (light, then dark; `present`, then `behaviour`), then the pages in the site's order (`lectures/_toc.yml`).
+`present` counts every part of a locator, as `<matched> (<visible> visible)`, and the first part decides `pass` or `absent`: the locator matching, as the parity harness's rule reads it. Whether the match is shown is in the detail, not the result, since a head element (the canonical link, the favicon, `rel="prev"`) is never shown and some controls show only on hover or scroll; a control a behaviour needs and cannot find shown fails that behaviour. The rows come in a fixed order: the features in the table's order (light, then dark; `present`, then `behaviour`), then the pages in the site's order (`lectures/_toc.yml`).
 
 ## provenance.json
 
