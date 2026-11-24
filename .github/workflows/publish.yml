@@ -2,6 +2,11 @@
 # which publish on a `publish*` tag, this test site publishes on every push to
 # main: the comparison harness reads the live site, and a stale test site is a
 # stale comparison.
+#
+# Three jobs: `publish` builds the site and uploads it; `rendered` runs the
+# harness's rendered checks on it (harness.yml); `deploy` publishes it, with
+# their rows under /_harness/ when that job succeeded. The deploy waits for the
+# checks but not on them: it runs whenever the build succeeded.
 name: Publish to GitHub Pages
 on:
   push:
@@ -34,9 +39,6 @@ jobs:
       image: ghcr.io/quantecon/quantecon-build@sha256:937af97c5b9185877cc53cded64d002df6d6ce5e561467931add2a029baada93
     env:
       QE_CONTAINER: ghcr.io/quantecon/quantecon-build@sha256:937af97c5b9185877cc53cded64d002df6d6ce5e561467931add2a029baada93
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page-url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -107,8 +109,51 @@ jobs:
           cp _build/xml/*.xml "${{ steps.build.outputs.build-path }}/_xml/"
           ls "${{ steps.build.outputs.build-path }}/_xml" | wc -l
 
+      # The built site, for the rendered checks and the deploy, which are jobs of
+      # their own so that the checks' rows can join the site before it is published.
+      - name: Upload the built site
+        uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: ${{ steps.build.outputs.build-path }}
+          if-no-files-found: error
+          retention-days: 1
+
+  # The rendered checks (QuantEcon/test-lecture-theme-sphinx#3; harness.yml), on
+  # the site the publish job built, served under the path the live site uses.
+  rendered:
+    needs: publish
+    uses: ./.github/workflows/harness.yml
+    with:
+      site-artifact: site
+      base-path: /test-lecture-theme-sphinx/
+
+  # Publishes the built site, with the rendered checks' rows at /_harness/ when
+  # that job succeeded and without them when it did not: a failed or cancelled
+  # check job never holds the site back, so long as the build succeeded.
+  deploy:
+    needs: [publish, rendered]
+    if: always() && needs.publish.result == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page-url }}
+    steps:
+      - name: Download the built site
+        uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: site
+
+      - name: Add the rendered checks' rows under /_harness/
+        if: needs.rendered.result == 'success'
+        uses: actions/download-artifact@v8
+        with:
+          name: harness
+          path: site/_harness
+
       - name: Deploy to GitHub Pages
         id: deploy
         uses: quantecon/actions/publish-gh-pages@v0
         with:
-          build-dir: ${{ steps.build.outputs.build-path }}
+          build-dir: site
