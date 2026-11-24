@@ -137,10 +137,7 @@ const behaviours = {
   async authors(c) {
     const links = await c.part().evaluateAll((as) => as.map((a) => ({ name: a.textContent.trim(), href: a.href })));
     const res = await B.fetchAll(c, links.map((l) => l.href));
-    const words = links.map((l, i) => `${l.name}: ${res[i].said}`);
-    if (res.some((r) => r.status >= 400)) return fail(words.join("; "));
-    if (res.some((r) => !r.status)) return skip(`${words.join("; ")}: a page did not answer, so a person checks it`);
-    return pass(words.join("; "));
+    return B.verdictOf(links.map((l, i) => `${l.name}: ${res[i].said}`).join("; "), res, res.every((r) => r.ok));
   },
 
   async "notebook-header"(c) {
