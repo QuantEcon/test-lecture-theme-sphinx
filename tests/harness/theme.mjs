@@ -93,7 +93,10 @@ const behaviours = {
     const opened = await page.evaluate(() => { const s = document.querySelector("#site-navigation"); if (!s) return false; const r = s.getBoundingClientRect(); return r.width > 0 && r.right > 0 && (s.checkVisibility ? s.checkVisibility({ visibilityProperty: true }) : getComputedStyle(s).visibility !== "hidden") && !s.classList.contains("inactive"); });
     const o = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
     const detail = `visible in the toolbar: ${actions.join(", ")}; nothing in a menu; the contents drawer opens: ${yes(opened)}; the page ${o.sw > o.cw ? `scrolls sideways (scrollWidth ${o.sw} > clientWidth ${o.cw})` : `fits (scrollWidth ${o.sw})`}`;
-    return opened && o.sw <= o.cw ? pass(detail) : fail(detail);
+    const result = opened && o.sw <= o.cw ? pass : fail;
+    // the result is the drawer and the width; whether every action the Sphinx site offers at 390px is reachable is a
+    // comparison of the two sites' lists, for a person
+    return result(`${detail}. The drawer and the width decide this row; a person compares the action lists with the other site's`);
   },
 
   async "contents-drawer"(c) {
