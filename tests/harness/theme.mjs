@@ -129,22 +129,17 @@ const behaviours = {
     await entry.scrollIntoViewIfNeeded();
     await entry.hover();
     await sleep(400);
-    // the icon's span is 0px wide (its svg overflows it), so the reader's click lands on the svg
-    let how = "clicked the icon";
-    try { await btn.locator("svg").first().click({ timeout: 5000 }); } catch {
-      how = "the icon could not be clicked where it shows, so a click was dispatched to it";
-      await btn.dispatchEvent("click");
-    }
-    await sleep(600);
-    const clip = await B.clipboard(page);
-    const detail = `${how}: the clipboard holds "${oneLine(clip, 160)}"; the entry's section is ${want}`;
+    // the icon's span is 0px wide (its svg overflows it), so the reader's click lands on the svg; if a real click
+    // cannot land, a reader cannot copy the link either
+    const { text: clip, untouched } = await B.copyWith(page, () => press(btn.locator("svg"), "the copy icon"));
+    const detail = `clicked the icon: the clipboard ${untouched ? "still holds the harness's marker, so the icon copied nothing" : `holds "${oneLine(clip, 160)}"`}; the entry's section is ${want}`;
     return clip === want ? pass(detail) : fail(detail);
   },
 
   async authors(c) {
     const links = await c.part().evaluateAll((as) => as.map((a) => ({ name: a.textContent.trim(), href: a.href })));
     const res = await B.fetchAll(c, links.map((l) => l.href));
-    return B.verdictOf(links.map((l, i) => `${l.name}: ${res[i].said}`).join("; "), res, res.every((r) => r.ok));
+    return B.verdictOf(links.map((l, i) => `${l.name}: ${res[i].said}`).join("; "), res, { good: (r) => r.ok });
   },
 
   async "notebook-header"(c) {
@@ -166,12 +161,11 @@ const behaviours = {
     await btn.evaluate((b) => b.closest("div.highlight")?.scrollIntoView({ block: "center" }));
     await btn.locator("xpath=..").hover().catch(() => {});
     await sleep(300);
-    await press(btn, "the copy button");
-    await sleep(600);
-    const clip = await B.clipboard(page);
+    const { text: clip, untouched } = await B.copyWith(page, () => press(btn, "the copy button"));
     const norm = (s) => (s ?? "").split("\n").map((l) => l.replace(/\s+$/, "")).join("\n").trim();
-    const ok = want != null && norm(clip) === norm(want);
-    return { result: ok ? "pass" : "fail", detail: `pressed on the first code block: the clipboard holds ${norm(clip).length} characters ("${oneLine(clip, 60)}"), ${ok ? "its source" : `not its source (${norm(want).length} characters, "${oneLine(want, 60)}")`}` };
+    const ok = want != null && !untouched && norm(clip) === norm(want);
+    return { result: ok ? "pass" : "fail", detail: untouched ? "pressed on the first code block: the clipboard still holds the harness's marker, so the button copied nothing"
+      : `pressed on the first code block: the clipboard holds ${norm(clip).length} characters ("${oneLine(clip, 60)}"), ${ok ? "its source" : `not its source (${norm(want).length} characters, "${oneLine(want, 60)}")`}` };
   },
 
   async "long-input"(c) {

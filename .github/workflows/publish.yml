@@ -6,7 +6,9 @@
 # Three jobs: `publish` builds the site and uploads it; `rendered` runs the
 # harness's rendered checks on it (harness.yml); `deploy` publishes it, with
 # their rows under /_harness/ when that job succeeded. The deploy waits for the
-# checks but not on them: it runs whenever the build succeeded.
+# checks but not on them: it runs whenever the build succeeded and the run was
+# not cancelled. Only `deploy` gets the Pages permissions; the build, which
+# executes the notebooks, and the checks get read access alone.
 name: Publish to GitHub Pages
 on:
   push:
@@ -15,8 +17,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
   packages: read
 
 concurrency:
@@ -129,12 +129,18 @@ jobs:
       base-path: /test-lecture-theme-sphinx/
 
   # Publishes the built site, with the rendered checks' rows at /_harness/ when
-  # that job succeeded and without them when it did not: a failed or cancelled
-  # check job never holds the site back, so long as the build succeeded.
+  # that job succeeded and without them when it did not: a failed check job
+  # never holds the site back, so long as the build succeeded. `!cancelled()`
+  # rather than `always()`, so a run cancelled while its checks ran publishes
+  # nothing.
   deploy:
     needs: [publish, rendered]
-    if: always() && needs.publish.result == 'success'
+    if: ${{ !cancelled() && needs.publish.result == 'success' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page-url }}

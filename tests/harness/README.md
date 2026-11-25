@@ -2,7 +2,7 @@
 
 *Playwright, run against this corpus's own build, checking the site features of the theme-parity harness (QuantEcon/project-theme-parity#15, D9) and every page for error markers, console errors and sideways scrolling; it writes `rendered.csv` and `provenance.json`, which CI publishes at `/_harness/`.*
 
-Last updated: 2026-11-24
+Last updated: 2026-11-25
 
 This is layer 3 of the parity harness, the Sphinx side of QuantEcon/test-lecture-theme-sphinx#3. Its twin in QuantEcon/test-lecture-theme-mystmd checks the mystmd site with the same engine and writes the same CSV, and QuantEcon/project-theme-parity folds the two files into a pass. The parity repository is private, so the checks live here, where this repository's CI can run them on the build it just made.
 
@@ -26,7 +26,7 @@ The exit status: 0 when every check ran, whatever it found; 1 when a check could
 
 **The colour scheme.** quantecon-book-theme reads one thing: `localStorage.setContrast`, `'1'` for dark (`layout.html`). It never reads `prefers-color-scheme`, so emulating that would record a light page as dark. Each context starts with the key in its storage, and before any check runs, the harness confirms the scheme took effect (`body.dark-theme` in dark, not in light); a page where it did not gives `error` rows.
 
-A check result is data: a failed feature check, a marker, a console message or an overflow is a row, not a failed job. So is a control a behaviour has to operate and cannot, because it is not shown or will not take the click: that is `fail`, with the control named, where a behaviour that throws for any other reason is `error`. Links are fetched from the browser's context, each URL once a run; a link that gets no answer (no connection, a 429 rate limit or a 5xx, after two more tries) leaves its check `skip`, for a person, rather than `fail`.
+A check result is data: a failed feature check, a marker, a console message or an overflow is a row, not a failed job. So is a control a behaviour has to operate and cannot, because it is not shown or will not take the click: that is `fail`, with the control named, where a behaviour that throws for any other reason is `error`. Links are fetched from the browser's context, each URL once a run. A link that answers with a failure (a 404, say), or a target that names the wrong file, makes its check `fail`; only when nothing failed does a link that gets no answer (no connection, a 429 rate limit or a 5xx, after two more tries) leave the check `skip`, for a person. Each behaviour has one time budget, 100 s inside its 120 s limit, and its retries stop before the budget runs out, so a slow or rate-limiting host gives `skip`, not `error`. The checks that read the clipboard take turns, since the browser has one clipboard, and each puts a marker on it before pressing, so a button that copies nothing cannot pass on text another check left there.
 
 ## rendered.csv
 
@@ -63,7 +63,7 @@ The repository and commit (`commit` is the pull request's head on a pull request
 
 ## The self-test
 
-`selftest/good/` and `selftest/bad/` are small static sites in this theme's markup, checked with `selftest/locators.yml` through the same engine and `theme.mjs`, their rows compared with `selftest/expected-*.csv`. Between them every check type passes and fails and every result appears: a working dark-mode toggle and a broken one, a stderr fold that works and one that does not, a MathJax error marker, a console error, a page wider than every viewport, a null locator, a locator that matches nothing, a check that cannot decide and a missing page. CI runs it before the real run; a mismatch fails the job.
+`selftest/good/` and `selftest/bad/` are small static sites in this theme's markup, checked with `selftest/locators.yml` through the same engine and `theme.mjs`, their rows compared with `selftest/expected-*.csv`. Between them every check type passes and fails and every result appears: a working dark-mode toggle and a broken one, a stderr fold that works and one that does not, a MathJax error marker and the "Unknown Directive" text, a console error and a hydration warning, a page wider than every viewport, a null locator, a locator that matches nothing, a check that cannot decide, a behaviour that throws (given a locator without the part it presses), a feature at the `wide` viewport, a missing page, and a page whose dark scheme does not take effect. Then `run.mjs` itself runs on the good site: at the base the site was built for it checks it, and at another its build-base check stops it with exit 2. CI runs the self-test before the real run; a mismatch fails the job.
 
 ## Files
 
@@ -71,7 +71,7 @@ The repository and commit (`commit` is the pull request's head on a pull request
 - `lib/` — the engine, the same in both corpora: `engine.mjs` (the run), `behave.mjs` (the behaviours both themes share), `markers.mjs`, `util.mjs`, `table.mjs` (reads and checks the table), `server.mjs` (a static server under a base path, after quantecon-theme.mystmd's `static-server.mjs`), `csv.mjs`
 - `locators.yml`, `selftest/`, `package.json` and `package-lock.json` (`@playwright/test` and `yaml`, pinned)
 
-`.github/workflows/harness.yml` runs it: on a pull request after the preview build (`ci.yml`), uploading `_harness/` as the run's `harness` artefact; on a push to `main` after the build (`publish.yml`), whose deploy job adds `_harness/` to the site when the checks succeeded and deploys without it when they did not.
+`.github/workflows/harness.yml` runs it: on a pull request after the preview build (`ci.yml`), uploading `_harness/` as the run's `harness` artefact; on a push to `main` after the build (`publish.yml`), whose deploy job adds `_harness/` to the site when the checks succeeded and deploys without it when they did not. A run cancelled while the checks ran deploys nothing.
 
 ## Not in this run
 
