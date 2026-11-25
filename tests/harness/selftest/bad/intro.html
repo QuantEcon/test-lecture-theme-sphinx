@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Intro — self-test</title>
+<style>body{margin:0;font:16px sans-serif} .qe-page__content{max-width:800px;margin:0 auto} .qe-page__content p{font-size:18px}
+body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .stderr-content.expanded{display:block}
+.highlight{overflow:hidden} pre{margin:0}</style></head>
+<body>
+<script>/* this page ignores the theme's scheme (localStorage.setContrast), so in dark the scheme does not take effect */
+console.warn("Warning: Text content did not match. Server: \"a\" Client: \"b\"");</script>
+<ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
+<div class="qe-page__content"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
+<div class="admonition"><p class="admonition-title">exercise-start - Unknown Directive</p></div></div><div style="width:2000px;height:10px;background:#c00"></div>
+<script>/* a broken toggle: the click does nothing */
+document.querySelector(".btn__contrast").addEventListener("click", function () {});</script>
+</body></html>

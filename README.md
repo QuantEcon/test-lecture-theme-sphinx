@@ -2,7 +2,7 @@
 
 *A representative corpus of the MyST constructs the QuantEcon Python lecture series use, built with Jupyter Book 1 and `quantecon-book-theme` through the same composite actions a production lecture repository runs, in the build image that both corpora share. Its sibling, [`test-lecture-theme-mystmd`](https://github.com/QuantEcon/test-lecture-theme-mystmd), builds the same content on the mystmd stack; the two are compared feature by feature to check parity and to find styling improvements and regressions before the lectures cut over.*
 
-Last updated: 2026-11-22
+Last updated: 2026-11-25
 
 > **This is a test repository.** Nothing here is a lecture. Do not link to it from a lecture site.
 
@@ -44,7 +44,25 @@ jb build lectures
 open lectures/_build/html/index.html
 ```
 
-Code cells execute (`execute_notebooks: cache`), so the build needs a Python kernel with `numpy`, `matplotlib`, `pandas`, `scipy`, `plotly` and `quantecon`. CI runs the same composite actions the lecture repositories run (`quantecon/actions@v0`, in the `quantecon-build` container); `publish.yml` deploys every push to `main` to GitHub Pages rather than waiting for a `publish*` tag, because the comparison harness reads the live site. It also publishes the engine's own output beside the site: the docutils XML of every page, at `/_xml/<page>.xml`, which the parity project's structural layer compares with mystmd's page AST. CI builds it after the HTML with `jb build lectures --path-output . --builder custom --custom-builder xml -W --keep-going` (the same `--path-output` as the HTML build, so it reuses the execution cache and runs nothing again) and copies `_build/xml/*.xml` into the HTML tree's `_xml/`. Locally, after `jb build lectures`, the same command without `--path-output .` writes `lectures/_build/xml/`.
+Code cells execute (`execute_notebooks: cache`), so the build needs a Python kernel with `numpy`, `matplotlib`, `pandas`, `scipy`, `plotly` and `quantecon`. CI runs the same composite actions the lecture repositories run (`quantecon/actions@v0`, in the `quantecon-build` container); `publish.yml` deploys every push to `main` to GitHub Pages rather than waiting for a `publish*` tag, because the comparison harness reads the live site; it builds, runs the rendered checks (below), and deploys in a job of its own that runs whenever the build succeeded and the run was not cancelled. It also publishes the engine's own output beside the site: the docutils XML of every page, at `/_xml/<page>.xml`, which the parity project's structural layer compares with mystmd's page AST. CI builds it after the HTML with `jb build lectures --path-output . --builder custom --custom-builder xml -W --keep-going` (the same `--path-output` as the HTML build, so it reuses the execution cache and runs nothing again) and copies `_build/xml/*.xml` into the HTML tree's `_xml/`. Locally, after `jb build lectures`, the same command without `--path-output .` writes `lectures/_build/xml/`.
+
+## The rendered checks
+
+`tests/harness/` is a Playwright project that checks this corpus's own build for the parity harness's rendered layer (QuantEcon/project-theme-parity#15, D9; QuantEcon/test-lecture-theme-sphinx#3): every site feature in its locator table, a copy of this theme's side of the harness's `bin/site-features.yml`, in light and dark, and every page at three viewports for error markers, console errors and sideways scrolling. CI runs it after the build (the `rendered` job of `ci.yml` on a pull request and of `publish.yml` on a push to `main`, the site served under `/test-lecture-theme-sphinx/` as the live one is) and uploads the results as the run's `harness` artefact; the deploy puts them on the site at `/_harness/rendered.csv` and `/_harness/provenance.json` when the checks succeeded, and deploys without them when they did not (a run cancelled meanwhile deploys nothing). `tests/harness/README.md` says how to run it and what each check does.
+
+`rendered.csv` has the same columns and vocabulary in both corpora, so the harness can join their rows on `page, family, check, viewport, scheme`:
+
+| Column | Holds |
+| --- | --- |
+| `page` | the page's Sphinx name (`code_cells`), on both sites |
+| `family` | the site feature's id, or `page` for the page-wide checks |
+| `check` | `present` (the feature's locator matches), `behaviour` (its behaviour holds), `error-marker`, `console` or `overflow` (page-wide) |
+| `viewport` | `desktop` (1280), `wide` (1440), `tablet` (820) or `phone` (390) |
+| `scheme` | `light` or `dark` |
+| `result` | `pass`; `fail`; `absent` (the locator matched nothing); `none` (no locator: this site has no counterpart); `skip` (the check could not decide, and `detail` says what a person looks at instead); `error` (the check could not run) |
+| `detail` | the evidence: a count, what the behaviour did, a message, a URL and what it answered |
+
+A failed check is a row, not a failed job: the job fails only when the harness itself does (its self-test, an unparsable locator table, a site it cannot serve, or a check that could not run).
 
 ## Relationship to other repositories
 

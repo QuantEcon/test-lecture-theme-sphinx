@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><link rel="canonical" href="https://quantecon.github.io/test-lecture-theme-sphinx/intro.html"><title>Intro — self-test</title>
+<style>body{margin:0;font:16px sans-serif} .qe-page__content{max-width:800px;margin:0 auto} .qe-page__content p{font-size:18px}
+body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .stderr-content.expanded{display:block}
+.highlight{overflow:hidden} pre{margin:0}</style></head>
+<body>
+<script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
+try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
+<ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
+<div class="qe-page__content"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p></div>
+<script>/* a working toggle: switches the page and keeps the choice */
+document.querySelector(".btn__contrast").addEventListener("click", function () {
+  var dark = !document.body.classList.contains("dark-theme");
+  document.body.classList.toggle("dark-theme", dark);
+  localStorage.setContrast = dark ? 1 : 0;
+});</script>
+</body></html>

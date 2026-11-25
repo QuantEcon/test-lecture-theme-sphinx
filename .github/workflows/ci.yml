@@ -139,3 +139,14 @@ jobs:
           build-dir: ${{ steps.build.outputs.build-path }}
           netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}
+
+  # The rendered checks (QuantEcon/test-lecture-theme-sphinx#3; harness.yml), on the site the preview job built and
+  # uploaded as sphinx-html, served under the path the live site uses. Their rows are this run's `harness`
+  # artefact; nothing here publishes. Pull requests only, as the sphinx-html artefact is.
+  rendered:
+    needs: preview
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/harness.yml
+    with:
+      site-artifact: sphinx-html
+      base-path: /test-lecture-theme-sphinx/
