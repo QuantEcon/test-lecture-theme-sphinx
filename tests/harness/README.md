@@ -71,7 +71,7 @@ The repository and commit (`commit` is the pull request's head on a pull request
 - `lib/` — the engine, the same in both corpora: `engine.mjs` (the run), `behave.mjs` (the behaviours both themes share), `markers.mjs`, `util.mjs`, `table.mjs` (reads and checks the table), `server.mjs` (a static server under a base path, after quantecon-theme.mystmd's `static-server.mjs`), `csv.mjs`
 - `locators.yml`, `selftest/`, `package.json` and `package-lock.json` (`@playwright/test` and `yaml`, pinned)
 
-`.github/workflows/harness.yml` runs it: on a pull request after the preview build (`ci.yml`), uploading `_harness/` as the run's `harness` artefact; on a push to `main` after the build (`publish.yml`), whose deploy job adds `_harness/` to the site when the checks succeeded and deploys without it when they did not. A run cancelled while the checks ran deploys nothing.
+`.github/workflows/harness.yml` runs it: on a pull request after the preview build (`ci.yml`), uploading `_harness/` as the run's `harness` artefact; on a push to `main` after the build (`publish.yml`), whose deploy job adds `_harness/` to the site when the checks succeeded and deploys without it when they did not. A run cancelled while the checks ran deploys nothing. Its first step checks that the shared engine (`lib/`, `run.mjs`, `selftest/run.mjs`, the package files but for their names, and `harness.yml` itself) matches the twin corpus's: on a pull request, the twin's branch of the same name when there is one, else its `main`, and a difference fails the job; on a push it only warns, since one half of a two-corpus change always merges first. So a change to the engine is made in both corpora, on one branch name.
 
 ## Not in this run
 
