@@ -118,7 +118,6 @@ jobs:
         with:
           name: sphinx-html
           path: ${{ steps.build.outputs.build-path }}
-          include-hidden-files: true   # the build's dotfiles (Sphinx's .buildinfo) reach the site, as before the split
           if-no-files-found: error
           retention-days: 7
 
