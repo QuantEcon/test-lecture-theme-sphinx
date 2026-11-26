@@ -7,7 +7,14 @@ body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .st
 <script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
 try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
 <ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
-<div class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="typography"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p></section></div>
+<main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="typography"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
+<!-- the drawn counts: cite-parenthetical's text filter keeps the bracketed citation and drops the narrative one -->
+<p>As <span class="bibtex-citation" id="id1">Keynes [<a class="reference internal" href="#id3">1940</a>]</span> argued, and others since
+<span class="bibtex-citation" id="id2">[<a class="reference internal" href="#id4">Russell, 2004</a>]</span>.</p>
+<div class="exercise admonition" id="selftest-ex-1"><p class="admonition-title"><span class="caption-number">Exercise 1 </span></p>
+<section id="exercise-content"><p>Show that it holds.</p></section></div>
+<div class="solution admonition" id="selftest-sol-1"><p class="admonition-title">Solution to<a class="reference internal" href="#selftest-ex-1"> Exercise 1</a></p>
+<section id="solution-content"><p>It holds.</p></section></div></section></main>
 <script>/* a working toggle: switches the page and keeps the choice */
 document.querySelector(".btn__contrast").addEventListener("click", function () {
   var dark = !document.body.classList.contains("dark-theme");

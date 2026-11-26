@@ -1,0 +1,34 @@
+# The self-test's drawn table: the format of ../drawn.yml, with six of its entries. Four carry this site's real
+# selector, so the fixtures in good/ and bad/ are counted as the real pages are; `math-inline` is null, as it is
+# there, so the self-test sees a family that writes no rows; and `figure` is given a selector the browser cannot
+# parse, so its count is never taken: empty on every page, and run.mjs exits 1. Between them, on the fixtures:
+#   code-cell           good code_cells, two cells, both shown; bad code_cells, one
+#   cell-output         good code_cells, an output inside hide-output's closed toggle: drawn 1, shown 0
+#   solution            good typography, one beside an exercise; bad typography, one hidden by a style: drawn 1,
+#                       shown 0
+#   cite-parenthetical  {select, text}: good typography, the text filter keeps the bracketed citation and drops the
+#                       narrative one
+# Every page where nothing matches is a row of 0; bad's missing page (long_cells) and its intro in dark, whose
+# scheme does not take effect, are empty. The counts are compared with expected-<site>-counts.csv.
+source:
+  repository: QuantEcon/project-theme-parity
+  path: bin/drawn.yml
+  commit: 41e66d5f63a0bddbb40ab8e92d0334ea9b14a28b
+  side: sphinx
+families:
+  - id: code-cell
+    selector: "main div.cell"
+  - id: cell-output
+    selector: "main div.cell_output"
+  - id: solution
+    selector: "main div.admonition.solution"
+  - id: cite-parenthetical
+    selector:
+      select: "main span.bibtex-citation"
+      text: "^\\["
+  - id: math-inline
+    selector: null
+    why: inline-maths
+  - id: figure
+    # not this site's selector: a pseudo-class the browser does not know, so the selector throws
+    selector: "main figure:captioned"

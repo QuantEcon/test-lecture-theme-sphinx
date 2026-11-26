@@ -14,9 +14,13 @@ body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .st
 <script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
 try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
 <ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
-<div class="qe-page__header"><h1 class="qe-page__header-heading"><a href="intro.html">Self-test Lectures</a></h1></div><div class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="code-cells"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
+<div class="qe-page__header"><h1 class="qe-page__header-heading"><a href="intro.html">Self-test Lectures</a></h1></div><main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="code-cells"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
 <div class="cell docutils container"><div class="cell_input docutils container"><div class="highlight-ipython3 notranslate"><div class="highlight"><pre id="codecell0"><span></span>import numpy as np
-x = np.linspace(0, 1, 5)</pre><button class="copybtn o-tooltip--left" data-tooltip="Copy" data-clipboard-target="#codecell0">copy</button></div></div></div></div></section></div><div class="stderr-collapsible-wrapper"><button class="stderr-toggle-button" aria-expanded="false">Code warnings</button>
+x = np.linspace(0, 1, 5)</pre><button class="copybtn o-tooltip--left" data-tooltip="Copy" data-clipboard-target="#codecell0">copy</button></div></div></div></div>
+<!-- the drawn counts: a second cell, tagged hide-output, whose output the theme draws inside the closed toggle -->
+<div class="cell tag_hide-output docutils container"><div class="cell_input docutils container"><div class="highlight-ipython3 notranslate"><div class="highlight"><pre id="codecell1"><span></span>print(x.sum())</pre></div></div></div>
+<details class="admonition hide below-input"><summary aria-label="Toggle hidden content"><p class="collapsed admonition-title">Show output</p></summary>
+<div class="cell_output docutils container"><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre id="codecell2"><span></span>2.5</pre></div></div></div></details></div></section></main><div class="stderr-collapsible-wrapper"><button class="stderr-toggle-button" aria-expanded="false">Code warnings</button>
 <div class="stderr-content">UserWarning: this goes to stderr</div></div>
 <script>document.querySelector(".stderr-toggle-button").addEventListener("click", function () {
   document.querySelector(".stderr-content").classList.toggle("expanded"); });</script>

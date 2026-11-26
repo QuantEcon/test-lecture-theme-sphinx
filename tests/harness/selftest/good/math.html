@@ -6,7 +6,7 @@ body.dark-theme{background:#1b1e23;color:#ddd} pre{margin:0} mjx-assistive-mml{p
 <script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
 try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
 <ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
-<div class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="mathematics">
+<main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="mathematics">
 <!-- maths as MathJax 3.2.2 (tex-mml-chtml) leaves it once typeset: the delimiters Sphinx wrote are gone, and the
      error markers find nothing; a price in dollars and TeX in code are not maths left raw -->
 <p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>, which costs $5 or $10.</p>
@@ -16,7 +16,7 @@ try { if (localStorage.setContrast === "1") document.body.classList.add("dark-th
      typeset, so not read, by MathJax's own rule -->
 <p>A literal \(y\) in the prose.</p>
 <div class="highlight-latex notranslate"><div class="highlight"><pre><span></span>\begin{align} a &amp;= \bar{b} \end{align}</pre></div></div>
-</section></div>
+</section></main>
 <script>/* a working toggle: switches the page and keeps the choice */
 document.querySelector(".btn__contrast").addEventListener("click", function () {
   var dark = !document.body.classList.contains("dark-theme");
