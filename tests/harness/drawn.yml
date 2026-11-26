@@ -23,7 +23,7 @@
 source:
   repository: QuantEcon/project-theme-parity
   path: bin/drawn.yml
-  commit: 41e66d5f63a0bddbb40ab8e92d0334ea9b14a28b
+  commit: 7f2bc1005722cd86ef2907dcd8d3971611787b03
   side: sphinx
 families:
   - id: code-cell
@@ -263,6 +263,9 @@ families:
   - id: ref-target
     selector: null
     why: no-surface
+  - id: numref-target
+    selector: null
+    why: no-surface
   - id: index-directive
     selector: null
     why: invisible
@@ -271,3 +274,6 @@ families:
     why: invisible
   - id: contents
     selector: "main nav.contents"
+  - id: block-break
+    selector: null
+    why: invisible
