@@ -3,12 +3,13 @@
 # main: the comparison harness reads the live site, and a stale test site is a
 # stale comparison.
 #
-# Three jobs: `publish` builds the site and uploads it; `rendered` runs the
-# harness's rendered checks on it (harness.yml); `deploy` publishes it, with
-# their rows under /_harness/ when that job succeeded. The deploy waits for the
-# checks but not on them: it runs whenever the build succeeded and the run was
-# not cancelled. Only `deploy` gets the Pages permissions; the build, which
-# executes the notebooks, and the checks get read access alone.
+# Four jobs: `publish` builds the site and uploads it; `rendered` runs the
+# harness's rendered checks on it (harness.yml); `deploy` uploads the Pages
+# artefact, with their rows under /_harness/ when that job succeeded; and
+# `pages` deploys it. `deploy` waits for the checks but not on them: it runs
+# whenever the build succeeded and the run was not cancelled, and `pages`
+# whenever `deploy` did. Only `pages` gets the Pages permissions; the build,
+# which executes the notebooks, the checks and the upload get read access alone.
 name: Publish to GitHub Pages
 on:
   push:
@@ -128,8 +129,9 @@ jobs:
       site-artifact: site
       base-path: /test-lecture-theme-sphinx/
 
-  # Publishes the built site, with the rendered checks' rows at /_harness/ when
-  # that job succeeded and without them when it did not: a failed check job
+  # Uploads the built site as the Pages artefact, with the rendered checks'
+  # rows at /_harness/ when that job succeeded and without them when it did
+  # not: a failed check job
   # never holds the site back, so long as the build succeeded. `!cancelled()`
   # rather than `always()`, so a run cancelled while its checks ran publishes
   # nothing.
@@ -139,11 +141,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page-url }}
     steps:
       - name: Download the built site
         uses: actions/download-artifact@v8
@@ -158,8 +155,34 @@ jobs:
           name: harness
           path: site/_harness
 
+      - name: Upload the site as the Pages artefact
+        uses: quantecon/actions/publish-gh-pages@v0
+        with:
+          mode: upload
+          build-dir: site
+
+  # The Pages deploy runs in a job of its own, after the upload, using
+  # publish-gh-pages' split modes. In one job (mode `all`) it lost a race with
+  # the artefact listing on the push of 49ca5f9 (run 45751593375: "No artifacts
+  # named github-pages", a few seconds after the upload), as the mystmd corpus's
+  # deploy did until QuantEcon/test-lecture-theme-mystmd#18. A job boundary lets
+  # the artefact settle first. The explicit `needs.deploy.result` test keeps the
+  # site deploying after a failed checks job. publish-gh-pages names the
+  # artefact github-pages with no option to change it, so a re-run that repeats
+  # `deploy` leaves two and this job then fails: re-run `pages` alone, or push.
+  pages:
+    needs: deploy
+    if: ${{ !cancelled() && needs.deploy.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page-url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deploy
         uses: quantecon/actions/publish-gh-pages@v0
         with:
-          build-dir: site
+          mode: deploy
