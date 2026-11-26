@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Maths — self-test</title>
+<style>body{margin:0;font:16px sans-serif} .qe-page__content{max-width:800px;margin:0 auto} .qe-page__content p{font-size:18px}
+body.dark-theme{background:#1b1e23;color:#ddd} pre{margin:0} mjx-assistive-mml{position:absolute;clip:rect(1px,1px,1px,1px);width:1px;height:1px;overflow:hidden}</style></head>
+<body>
+<script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
+try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
+<ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
+<div class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="mathematics">
+<!-- maths as MathJax 3.2.2 (tex-mml-chtml) leaves it once typeset: the delimiters Sphinx wrote are gone, and the
+     error markers find nothing; a price in dollars and TeX in code are not maths left raw -->
+<p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>, which costs $5 or $10.</p>
+<p>Inline <span class="math notranslate nohighlight"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="1" style="font-size: 101.6%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-texatom texclass="ORD"><mjx-mi class="mjx-ds mjx-b"><mjx-c class="mjx-c211D TEX-A"></mjx-c></mjx-mi></mjx-texatom></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow data-mjx-texclass="ORD"><mi mathvariant="double-struck">R</mi></mrow></math></mjx-assistive-mml></mjx-container></span>, written <code class="docutils literal notranslate"><span class="pre">\(\RR\)</span></code> or <code class="docutils literal notranslate"><span class="pre">$$\RR$$</span></code>.</p>
+<div class="math notranslate nohighlight"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" display="true" tabindex="0" ctxtmenu_counter="2" style="font-size: 101.6%; position: relative;"><mjx-math display="true" class="MJX-TEX" aria-hidden="true" style="margin-left: 0px; margin-right: 0px;"><mjx-mtable style="min-width: 2.292em;"><mjx-table><mjx-itable><mjx-mtr><mjx-mtd style="text-align: right; padding-right: 0px;"><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D44E TEX-I"></mjx-c></mjx-mi><mjx-tstrut></mjx-tstrut></mjx-mtd><mjx-mtd style="text-align: left; padding-left: 0px;"><mjx-mi class="mjx-n"></mjx-mi><mjx-mo class="mjx-n" space="4"><mjx-c class="mjx-c3D"></mjx-c></mjx-mo><mjx-texatom space="4" texclass="ORD"><mjx-mover><mjx-over style="padding-bottom: 0.105em; padding-left: 0.214em; margin-bottom: -0.544em;"><mjx-mo class="mjx-n" style="width: 0px; margin-left: -0.25em;"><mjx-c class="mjx-cAF"></mjx-c></mjx-mo></mjx-over><mjx-base><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D44F TEX-I"></mjx-c></mjx-mi></mjx-base></mjx-mover></mjx-texatom><mjx-tstrut></mjx-tstrut></mjx-mtd></mjx-mtr></mjx-itable></mjx-table></mjx-mtable></mjx-math><mjx-assistive-mml unselectable="on" display="block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mtable displaystyle="true" columnalign="right left" columnspacing="0em" rowspacing="3pt"><mtr><mtd><mi>a</mi></mtd><mtd><mi></mi><mo>=</mo><mrow data-mjx-texclass="ORD"><mover><mi>b</mi><mo stretchy="false">¯</mo></mover></mrow></mtd></mtr></mtable></math></mjx-assistive-mml></mjx-container></div>
+<!-- TeX in prose the section tells MathJax to leave alone, outside any .math element: not maths MathJax was asked to
+     typeset, so not read, by MathJax's own rule -->
+<p>A literal \(y\) in the prose.</p>
+<div class="highlight-latex notranslate"><div class="highlight"><pre><span></span>\begin{align} a &amp;= \bar{b} \end{align}</pre></div></div>
+</section></div>
+<script>/* a working toggle: switches the page and keeps the choice */
+document.querySelector(".btn__contrast").addEventListener("click", function () {
+  var dark = !document.body.classList.contains("dark-theme");
+  document.body.classList.toggle("dark-theme", dark);
+  localStorage.setContrast = dark ? 1 : 0;
+});</script>
+</body></html>

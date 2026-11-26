@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Maths — self-test</title>
+<!-- maths that never rendered: Sphinx's MathJax setup, but the script does not load (here it answers 404, as when
+     the CDN fails), so every expression keeps the delimiters Sphinx wrote round it -->
+<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="_static/mathjax-unavailable/tex-mml-chtml.js"></script>
+<style>body{margin:0;font:16px sans-serif} .qe-page__content{max-width:800px;margin:0 auto} .qe-page__content p{font-size:18px}
+body.dark-theme{background:#1b1e23;color:#ddd} pre{margin:0}</style></head>
+<body>
+<script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
+try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
+<ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
+<div class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="mathematics">
+<p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>, and <span class="math notranslate nohighlight">\(x^2 + y^2\)</span> in it.</p>
+<div class="math notranslate nohighlight">\[\int_0^1 f(x) \, dx\]</div>
+<div class="math notranslate nohighlight" id="equation-mean">\begin{align} a &amp;= \bar{b} \end{align}</div>
+</section></div>
+<script>/* a broken toggle: the click does nothing */
+document.querySelector(".btn__contrast").addEventListener("click", function () {});</script>
+</body></html>

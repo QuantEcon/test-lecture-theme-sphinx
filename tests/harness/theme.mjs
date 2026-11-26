@@ -131,7 +131,9 @@ const behaviours = {
     await sleep(400);
     // the icon's span is 0px wide (its svg overflows it), so the reader's click lands on the svg; if a real click
     // cannot land, a reader cannot copy the link either
-    const { text: clip, untouched } = await B.copyWith(page, () => press(btn.locator("svg"), "the copy icon"));
+    const copied = await B.copyWith(page, () => press(btn.locator("svg"), "the copy icon"));
+    if (!copied.primed) return B.unprimed(copied);
+    const { text: clip, untouched } = copied;
     const detail = `clicked the icon: the clipboard ${untouched ? "still holds the harness's marker, so the icon copied nothing" : `holds "${oneLine(clip, 160)}"`}; the entry's section is ${want}`;
     return clip === want ? pass(detail) : fail(detail);
   },
@@ -161,7 +163,9 @@ const behaviours = {
     await btn.evaluate((b) => b.closest("div.highlight")?.scrollIntoView({ block: "center" }));
     await btn.locator("xpath=..").hover().catch(() => {});
     await sleep(300);
-    const { text: clip, untouched } = await B.copyWith(page, () => press(btn, "the copy button"));
+    const copied = await B.copyWith(page, () => press(btn, "the copy button"));
+    if (!copied.primed) return B.unprimed(copied);
+    const { text: clip, untouched } = copied;
     const norm = (s) => (s ?? "").split("\n").map((l) => l.replace(/\s+$/, "")).join("\n").trim();
     const ok = want != null && !untouched && norm(clip) === norm(want);
     return { result: ok ? "pass" : "fail", detail: untouched ? "pressed on the first code block: the clipboard still holds the harness's marker, so the button copied nothing"
