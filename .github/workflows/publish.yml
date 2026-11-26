@@ -139,11 +139,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page-url }}
     steps:
       - name: Download the built site
         uses: actions/download-artifact@v8
@@ -158,8 +153,34 @@ jobs:
           name: harness
           path: site/_harness
 
+      - name: Upload the site as the Pages artefact
+        uses: quantecon/actions/publish-gh-pages@v0
+        with:
+          mode: upload
+          build-dir: site
+
+  # The Pages deploy runs in a job of its own, after the upload, using
+  # publish-gh-pages' split modes. In one job (mode `all`) it lost a race with
+  # the artefact listing on the push of 49ca5f9 (run 45751593375: "No artifacts
+  # named github-pages", a few seconds after the upload), as the mystmd corpus's
+  # deploy did until QuantEcon/test-lecture-theme-mystmd#18. A job boundary lets
+  # the artefact settle first. The explicit `needs.deploy.result` test keeps the
+  # site deploying after a failed checks job. publish-gh-pages names the
+  # artefact github-pages with no option to change it, so a re-run that repeats
+  # `deploy` leaves two and this job then fails: re-run `pages` alone, or push.
+  pages:
+    needs: deploy
+    if: ${{ !cancelled() && needs.deploy.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page-url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deploy
         uses: quantecon/actions/publish-gh-pages@v0
         with:
-          build-dir: site
+          mode: deploy
