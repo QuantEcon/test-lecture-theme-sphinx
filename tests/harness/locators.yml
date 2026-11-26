@@ -23,7 +23,7 @@
 source:
   repository: QuantEcon/project-theme-parity
   path: bin/site-features.yml
-  commit: 2452933f33371decb364de3443504b55374a1afc
+  commit: 757024df452240f450e5f46abf4836923e6cec6a
   side: sphinx
 features:
   - id: launch
@@ -37,7 +37,7 @@ features:
     page: code_cells
     viewport: desktop
     locator: 'li[data-tippy-content="Download Notebook"] a[download]'
-    behaviour: "open the control where it is a menu, and fetch each link"
+    behaviour: "open the control where it is a menu; fetch each link, or select each menu item and fetch the file it downloads"
   - id: download-pdf
     name: "A PDF of the page"
     page: code_cells
