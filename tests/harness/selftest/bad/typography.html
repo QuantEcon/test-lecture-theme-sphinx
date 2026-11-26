@@ -7,9 +7,12 @@ body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .st
 <script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
 try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
 <ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
-<div class="qe-page__content"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p></div><p>Maths: <mjx-container><mjx-merror data-mjx-error="Missing close brace">x</mjx-merror></mjx-container></p>
+<div class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="typography"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
+<p>Maths: <mjx-container><mjx-merror data-mjx-error="Missing close brace">x</mjx-merror></mjx-container></p>
 <!-- an undefined macro as MathJax 3.2.2 (tex-mml-chtml) typesets it, \(\foo + x^2\): its name in red, with no error node -->
 <p>An undefined macro: <span class="math notranslate nohighlight"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" tabindex="0" ctxtmenu_counter="0" style="font-size: 101.6%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-mtext class="mjx-n" style="color: red;"><mjx-c class="mjx-c5C"></mjx-c><mjx-c class="mjx-c66"></mjx-c><mjx-c class="mjx-c6F"></mjx-c><mjx-c class="mjx-c6F"></mjx-c></mjx-mtext><mjx-mo class="mjx-n" space="3"><mjx-c class="mjx-c2B"></mjx-c></mjx-mo><mjx-msup space="3"><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D465 TEX-I"></mjx-c></mjx-mi><mjx-script style="vertical-align: 0.363em;"><mjx-mn class="mjx-n" size="s"><mjx-c class="mjx-c32"></mjx-c></mjx-mn></mjx-script></mjx-msup></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><mtext mathcolor="red">\foo</mtext><mo>+</mo><msup><mi>x</mi><mn>2</mn></msup></math></mjx-assistive-mml></mjx-container></span></p>
+<!-- the same, \(\baz\), where MathJax writes no assistive MathML: only the CommonHTML glyphs name the macro -->
+<p>Another: <span class="math notranslate nohighlight"><mjx-container class="MathJax" jax="CHTML" style="font-size: 101.6%; position: relative;"><mjx-math class="MJX-TEX"><mjx-mtext class="mjx-n" style="color: red;"><mjx-c class="mjx-c5C"></mjx-c><mjx-c class="mjx-c62"></mjx-c><mjx-c class="mjx-c61"></mjx-c><mjx-c class="mjx-c7A"></mjx-c></mjx-mtext></mjx-math></mjx-container></span></p></section></div>
 <script>/* a broken toggle: the click does nothing */
 document.querySelector(".btn__contrast").addEventListener("click", function () {});</script>
 </body></html>
