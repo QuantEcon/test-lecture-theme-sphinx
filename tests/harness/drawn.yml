@@ -1,0 +1,273 @@
+# drawn.yml -- this site's drawn selectors for the families' drawn checks (QuantEcon/project-theme-parity#15, D18).
+#
+# A copy of bin/drawn.yml in QuantEcon/project-theme-parity at the commit `source` names, taking only this theme's
+# side of each entry (`sphinx:`), with `each` expanded. It is a copy because that repository is private, and this
+# repository's CI cannot read it. The entries keep that file's order and its ids, which are bin/families.yml's: a row
+# of counts.csv is keyed by the family id, and that repository's bin/measure sets it beside this build's own engine
+# count (structure.csv), never beside the other site's.
+#
+# Each entry carries what a count needs:
+#   id         the family id, expanded (`prf-theorem`, `heading-h2`)
+#   selector   this theme's selector over the page's content: a Playwright selector (CSS, with `:has()`, `:text-is()`,
+#              `:text-matches()` and `:has-text()` allowed), every element it matches counting; or {select, in, text},
+#              the elements `select` matches whose own text, or the text of their first `in` descendant, whitespace
+#              collapsed and trimmed, matches the regular expression `text`, compiled as a JavaScript RegExp with the
+#              `u` flag; or null where this theme draws no surface a selector can count, which counts.csv records by
+#              writing no rows for it, not as a count of 0
+#   why        only where the selector is null: invisible, inline-maths, report, styling, anchor, no-surface or text
+#   corrected  only where a selector had moved on this site's build: {from: the selector as copied, why: what moved}
+#
+# Every selector was checked against this site's build before it was copied here. One that has moved is corrected
+# here, with its `corrected:` note, and carried in provenance.json, until bin/drawn.yml carries it too; this
+# repository cannot change that file, so the PR that makes a correction proposes it there. None is open on this site.
+source:
+  repository: QuantEcon/project-theme-parity
+  path: bin/drawn.yml
+  commit: 41e66d5f63a0bddbb40ab8e92d0334ea9b14a28b
+  side: sphinx
+families:
+  - id: code-cell
+    selector: "main div.cell"
+  - id: cell-output
+    selector: "main div.cell_output"
+  - id: code-cell-tagged
+    selector: 'main div.cell[class*="tag_"]'
+  - id: tag-hide-input
+    selector: "main div.cell.tag_hide-input > details.above-input"
+  - id: tag-hide-output
+    selector: "main div.cell.tag_hide-output > details.below-input"
+  - id: tag-hide-cell
+    selector: "main div.cell.tag_hide-cell > details.above-input"
+  - id: tag-raises-exception
+    selector: "main div.cell.tag_raises-exception > div.cell_output"
+  - id: tag-skip-execution
+    selector: null
+    why: invisible
+  - id: tag-collapse-20
+    selector: "main div.cell.tag_collapse-20 .collapse-toggle-bar"
+  - id: tag-no-execute
+    selector: null
+    why: invisible
+  - id: tag-scroll-output-renamed
+    selector: "main div.cell.tag_output_scroll > div.cell_output, main div.cell.tag_scroll-output > div.cell_output"
+  - id: code-block
+    selector: 'main div[class*="highlight-"]:not(.cell_input *):not(.cell_output *):not(.highlight-myst-ansi)'
+  - id: code-block-class
+    selector: null
+    why: styling
+  - id: math-display
+    selector: 'main mjx-container[display="true"]:not(:has(mjx-merror))'
+  - id: math-labelled
+    selector: null
+    why: anchor
+  - id: env-bmatrix
+    selector: null
+    why: no-surface
+  - id: env-aligned
+    selector: null
+    why: no-surface
+  - id: env-array
+    selector: null
+    why: no-surface
+  - id: env-pmatrix
+    selector: null
+    why: no-surface
+  - id: env-cases
+    selector: null
+    why: no-surface
+  - id: env-matrix
+    selector: null
+    why: no-surface
+  - id: env-split
+    selector: null
+    why: no-surface
+  - id: env-align
+    selector: null
+    why: no-surface
+  - id: env-gathered
+    selector: null
+    why: no-surface
+  - id: "env-align*"
+    selector: null
+    why: no-surface
+  - id: env-equation-wrapper
+    selector: null
+    why: report
+  - id: "env-equation*-wrapper"
+    selector: null
+    why: report
+  - id: math-inline
+    selector: null
+    why: inline-maths
+  - id: math-inline-simplified
+    selector: null
+    why: inline-maths
+  - id: figure
+    selector: "main figure:not(.cell *)"
+  - id: figure-from-cell
+    selector: "main div.cell figure"
+  - id: image
+    selector: "main section img:not(figure *):not(.cell *)"
+  - id: figure-named
+    selector: null
+    why: anchor
+  - id: figure-width
+    selector: null
+    why: styling
+  - id: figure-height
+    selector: null
+    why: styling
+  - id: figure-align
+    selector: null
+    why: styling
+  - id: figure-figclass
+    selector: null
+    why: styling
+  - id: image-align
+    selector: null
+    why: styling
+  - id: image-named
+    selector: null
+    why: anchor
+  - id: table
+    selector: "main table:not(.cell_output *)"
+  - id: admonition-note
+    selector: 'main div.admonition[class*="admonition note"]'
+  - id: admonition-warning
+    selector: 'main div.admonition[class*="admonition warning"]'
+  - id: admonition-tip
+    selector: 'main div.admonition[class*="admonition tip"]'
+  - id: admonition-important
+    selector: 'main div.admonition[class*="admonition important"]'
+  - id: admonition-hint
+    selector: 'main div.admonition[class*="admonition hint"]'
+  - id: admonition-seealso
+    selector: 'main div.admonition[class*="admonition seealso"]'
+  - id: admonition-titled
+    selector: 'main div.admonition:not(.proof):not(.exercise):not(.solution):not(.todo):not([class*="admonition note"]):not([class*="admonition warning"]):not([class*="admonition tip"]):not([class*="admonition important"]):not([class*="admonition hint"]):not([class*="admonition seealso"]):not(.cell *)'
+  - id: admonition-class
+    selector: null
+    why: styling
+  - id: hint-dropdown
+    selector: "main div.admonition.hint.dropdown"
+  - id: note-named
+    selector: null
+    why: anchor
+  - id: epigraph
+    selector: "main blockquote.epigraph"
+  - id: exercise
+    selector: "main div.admonition.exercise"
+  - id: solution
+    selector: "main div.admonition.solution"
+  - id: exercise-labelled
+    selector: null
+    why: anchor
+  - id: solution-labelled
+    selector: null
+    why: anchor
+  - id: solution-dropdown
+    selector: "main div.admonition.solution.dropdown"
+  - id: prf-definition
+    selector: "main div.proof.definition"
+  - id: prf-example
+    selector: "main div.proof.example"
+  - id: prf-lemma
+    selector: "main div.proof.lemma"
+  - id: prf-proposition
+    selector: "main div.proof.proposition"
+  - id: prf-assumption
+    selector: "main div.proof.assumption"
+  - id: prf-corollary
+    selector: "main div.proof.corollary"
+  - id: prf-remark
+    selector: "main div.proof.remark"
+  - id: prf-property
+    selector: "main div.proof.property"
+  - id: prf-algorithm
+    selector: "main div.proof.algorithm"
+  - id: prf-proof
+    selector: "main div.proof:not(:has(> p.admonition-title))"
+  - id: prf-theorem
+    selector: "main div.proof.theorem"
+  - id: prf-nonumber
+    selector: null
+    why: text
+  - id: prf-labelled-definition
+    selector: null
+    why: anchor
+  - id: prf-labelled-example
+    selector: null
+    why: anchor
+  - id: prf-labelled-proposition
+    selector: null
+    why: anchor
+  - id: prf-labelled-assumption
+    selector: null
+    why: anchor
+  - id: prf-labelled-lemma
+    selector: null
+    why: anchor
+  - id: prf-labelled-remark
+    selector: null
+    why: anchor
+  - id: prf-labelled-algorithm
+    selector: null
+    why: anchor
+  - id: prf-labelled-corollary
+    selector: null
+    why: anchor
+  - id: prf-labelled-property
+    selector: null
+    why: anchor
+  - id: prf-labelled-theorem
+    selector: null
+    why: anchor
+  - id: heading-h1
+    selector: "main h1"
+  - id: heading-h2
+    selector: "main h2"
+  - id: heading-h3
+    selector: "main h3"
+  - id: heading-h4
+    selector: "main h4"
+  - id: heading-h5
+    selector: "main h5"
+  - id: blockquote
+    selector: "main blockquote:not(.epigraph)"
+  - id: definition-list
+    selector: "main dl:not(.field-list):not(.glossary):not(.citation):not(.footnote)"
+  - id: footnote-definition
+    selector: "main aside.footnote"
+  - id: footnote-reference
+    selector: "main a.footnote-reference"
+  - id: comment
+    selector: null
+    why: invisible
+  - id: role-download
+    selector: "main a.reference.download"
+  - id: role-eq
+    selector: 'main a.reference.internal[href*="#equation-"]'
+  - id: role-prf-ref
+    selector: null
+    why: no-surface
+  - id: citation
+    selector: "main span.bibtex-citation"
+  - id: cite-narrative
+    selector:
+      select: "main span.bibtex-citation"
+      text: "^[^\\[]"
+  - id: cite-parenthetical
+    selector:
+      select: "main span.bibtex-citation"
+      text: "^\\["
+  - id: ref-target
+    selector: null
+    why: no-surface
+  - id: index-directive
+    selector: null
+    why: invisible
+  - id: index-role
+    selector: null
+    why: invisible
+  - id: contents
+    selector: "main nav.contents"
