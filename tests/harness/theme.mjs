@@ -15,12 +15,46 @@ function stemOf(href, base) {
   return last.replace(/\.html$/, "");
 }
 
+// The content root, `main.qe-page__content`: the lecture text, the drawn selectors' scope, and the metrics' (D19).
+// The body text: a paragraph of running text, directly in a section and in no box. `para` takes every paragraph of
+// the text, boxed ones too (an exercise's, a proof's: on `admonitions` and `exercises` the commonest paragraph is a
+// boxed one), so it serves the behaviours that press on the text, and `body` is the metrics' reference for size and
+// column, and dark-palette's text. One proof dropdown is drawn without `.admonition`, hence `.proof` too.
 const profile = {
-  text: ".qe-page__content", // the lecture text
+  text: "main.qe-page__content", // the lecture text
   para: ".qe-page__content p",
+  body: "section > p:not(.admonition *):not(.proof *)", // inside `text`
   stemOf,
   maths: { all: "mjx-container", menu: ".CtxtMenu_Menu", item: ".CtxtMenu_MenuItem" },
 };
+
+/**
+ * Where a surface's pairing key sits on this theme (lib/visual.mjs normalises and hashes it; decision 3 of
+ * QuantEcon/project-theme-parity#80). Runs in the page, on a shown surface, with the content root. Each is there only
+ * where the surface has it: `tex`, a display maths element's TeX, from MathJax's math list (MathJax removes the TeX
+ * from the page as it typesets, and keeps it on each MathItem with the element it typeset); `code`, the input of
+ * the cell the surface is or lies in, or of the code block it is or lies in; `heading`, a heading's text without its
+ * section number or permalink; `label`, the nearest id at or above the surface, below its section, that docutils did
+ * not generate (`id1`, `id2`, …: those name no label).
+ */
+function sourceOf(e, root) {
+  const out = {};
+  if (e.matches("mjx-container")) {
+    for (const item of window.MathJax?.startup?.document?.math ?? []) if (item.typesetRoot === e) { out.tex = String(item.math); break; }
+  }
+  const cell = e.closest("div.cell");
+  const code = cell ? cell.querySelector(".cell_input pre") : e.closest('div[class*="highlight-"]')?.querySelector("pre");
+  if (code) out.code = code.textContent;
+  if (/^H[1-6]$/.test(e.tagName)) {
+    const h = e.cloneNode(true);
+    for (const x of h.querySelectorAll("a.headerlink, span.section-number")) x.remove();
+    out.heading = h.textContent;
+  }
+  for (let x = e; x && x !== root && x.tagName !== "SECTION"; x = x.parentElement) {
+    if (x.id && !/^id\d+$/.test(x.id)) { out.label = x.id; break; }
+  }
+  return out;
+}
 
 const behaviours = {
   ...B.commonBehaviours(profile),
@@ -217,6 +251,10 @@ behaviours["notebook-header"].withoutLocator = true;
 
 export default {
   side: "sphinx",
+  // the metrics' theme facts (D19): the content root, the body text inside it, and where a surface's key sits
+  content: profile.text,
+  bodyText: profile.body,
+  sourceOf,
   repository: "QuantEcon/test-lecture-theme-sphinx",
   basePath: "/test-lecture-theme-sphinx/",
   publishedBase: "https://quantecon.github.io/test-lecture-theme-sphinx/",

@@ -2,7 +2,10 @@
 <html lang="en"><head><meta charset="utf-8"><title>Typography — self-test</title>
 <style>body{margin:0;font:16px sans-serif} .qe-page__content{max-width:800px;margin:0 auto} .qe-page__content p{font-size:18px}
 body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .stderr-content.expanded{display:block}
-.highlight{overflow:hidden} pre{margin:0}</style></head>
+.highlight{overflow:hidden} pre{margin:0}
+/* the metrics (D19): each measured box pinned in px, so the expected metrics hold whatever the platform's fonts */
+.solution{height:100px;background:rgba(0,0,255,.2)} .solution .admonition-title{margin:0;font-size:14px;font-weight:700;color:#555555}
+.solution section p{margin:0;font-size:16px;line-height:24px;color:#333333} .bibtex-citation{display:inline-block;width:200px;height:24px}</style></head>
 <body>
 <script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
 try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
@@ -13,8 +16,11 @@ try { if (localStorage.setContrast === "1") document.body.classList.add("dark-th
 <span class="bibtex-citation" id="id2">[<a class="reference internal" href="#id4">Russell, 2004</a>]</span>.</p>
 <div class="exercise admonition" id="selftest-ex-1"><p class="admonition-title"><span class="caption-number">Exercise 1 </span></p>
 <section id="exercise-content"><p>Show that it holds.</p></section></div>
+<!-- the metrics: the solution's title is its first text and its answer its dominant text, on a translucent
+     background composited over the page's (in dark, a pair below 4.5:1); its id is its key. The parenthetical
+     citation's id is one docutils generated, so it has no key, and pairs by n -->
 <div class="solution admonition" id="selftest-sol-1"><p class="admonition-title">Solution to<a class="reference internal" href="#selftest-ex-1"> Exercise 1</a></p>
-<section id="solution-content"><p>It holds.</p></section></div></section></main>
+<section id="solution-content"><p>It holds, since every term of the series is positive and their sum is finite.</p></section></div></section></main>
 <script>/* a working toggle: switches the page and keeps the choice */
 document.querySelector(".btn__contrast").addEventListener("click", function () {
   var dark = !document.body.classList.contains("dark-theme");

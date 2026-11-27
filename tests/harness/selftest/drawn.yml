@@ -1,15 +1,20 @@
-# The self-test's drawn table: the format of ../drawn.yml, with six of its entries. Four carry this site's real
-# selector, so the fixtures in good/ and bad/ are counted as the real pages are; `math-inline` is null, as it is
-# there, so the self-test sees a family that writes no rows; and `figure` is given a selector the browser cannot
-# parse, so its count is never taken: empty on every page, and run.mjs exits 1. Between them, on the fixtures:
-#   code-cell           good code_cells, two cells, both shown; bad code_cells, one
-#   cell-output         good code_cells, an output inside hide-output's closed toggle: drawn 1, shown 0
-#   solution            good typography, one beside an exercise; bad typography, one hidden by a style: drawn 1,
-#                       shown 0
+# The self-test's drawn table: the format of ../drawn.yml, with seven of its entries. Five carry this site's real
+# selector, so the fixtures in good/ and bad/ are counted, and measured, as the real pages are; `math-inline` is null,
+# as it is there, so the self-test sees a family that writes no rows; and `figure` is given a selector the browser
+# cannot parse, so its count is never taken: empty on every page, no metrics, and run.mjs exits 1. Between them, on
+# the fixtures:
+#   code-cell           good code_cells, three cells, all shown (the first wider inside than its box); bad
+#                       code_cells, one, on a page with no body text
+#   cell-output         good code_cells, an output inside hide-output's closed toggle (drawn, not shown) and a third
+#                       cell's output, with no text (drawn 2, shown 1: its metrics row is n 2)
+#   solution            good typography, one beside an exercise, on a translucent background; bad typography, one
+#                       hidden by a style: drawn 1, shown 0
 #   cite-parenthetical  {select, text}: good typography, the text filter keeps the bracketed citation and drops the
-#                       narrative one
+#                       narrative one; it has no key, so it pairs by n
+#   math-display        good math, one display, keyed by its TeX
 # Every page where nothing matches is a row of 0; bad's missing page (long_cells) and its intro in dark, whose
-# scheme does not take effect, are empty. The counts are compared with expected-<site>-counts.csv.
+# scheme does not take effect, are empty. The counts are compared with expected-<site>-counts.csv, and the metrics
+# of every surface shown with expected-<site>-metrics.csv.
 source:
   repository: QuantEcon/project-theme-parity
   path: bin/drawn.yml
@@ -26,6 +31,8 @@ families:
     selector:
       select: "main span.bibtex-citation"
       text: "^\\["
+  - id: math-display
+    selector: 'main mjx-container[display="true"]:not(:has(mjx-merror))'
   - id: math-inline
     selector: null
     why: inline-maths

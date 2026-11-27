@@ -10,12 +10,15 @@
 <meta name="twitter:card" content="summary">
 <style>body{margin:0;font:16px sans-serif} .qe-page__content{max-width:800px;margin:0 auto} .qe-page__content p{font-size:18px}
 body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .stderr-content.expanded{display:block}
-.highlight{overflow:hidden;position:relative} pre{margin:0}</style></head>
+.highlight{overflow:hidden;position:relative} pre{margin:0}
+/* the metrics (D19): each measured box pinned in px, so the expected metrics hold whatever the platform's fonts */
+.cell{height:120px}</style></head>
 <body>
 <script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
 try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
 <ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
-<div class="qe-page__header"><h1>Self-test Lectures, the title not linked</h1></div><main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="code-cells"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
+<div class="qe-page__header"><h1>Self-test Lectures, the title not linked</h1></div><main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="code-cells"><!-- the metrics: the page's one paragraph is boxed, so it has no body text: the body measures are empty -->
+<div class="admonition note"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p></div>
 <div class="cell docutils container"><div class="cell_input docutils container"><div class="highlight-ipython3 notranslate"><div class="highlight"><pre id="codecell0"><span></span>import numpy as np
 x = np.linspace(0, 1, 5)</pre><button class="copybtn o-tooltip--left" data-tooltip="Copy" data-clipboard-target="#codecell0">copy</button></div></div></div></div></section></main><div class="stderr-collapsible-wrapper"><button class="stderr-toggle-button" aria-expanded="false">Code warnings</button>
 <div class="stderr-content expanded">UserWarning: this goes to stderr</div></div>
