@@ -18,8 +18,8 @@ function stemOf(href, base) {
 // The content root, `main.qe-page__content`: the lecture text, the drawn selectors' scope, and the metrics' (D19).
 // The body text: a paragraph of running text, directly in a section and in no box. `para` takes every paragraph of
 // the text, boxed ones too (an exercise's, a proof's: on `admonitions` and `exercises` the commonest paragraph is a
-// boxed one), so it serves the behaviours that press on the text, and `body` is the metrics' reference for size and
-// column, and dark-palette's text. One proof dropdown is drawn without `.admonition`, hence `.proof` too.
+// boxed one), so it serves the behaviours that read the text (font-size, dark-palette), and `body` is the metrics'
+// reference for size and column. One proof dropdown is drawn without `.admonition`, hence `.proof` too.
 const profile = {
   text: "main.qe-page__content", // the lecture text
   para: ".qe-page__content p",
@@ -33,9 +33,11 @@ const profile = {
  * QuantEcon/project-theme-parity#80). Runs in the page, on a shown surface, with the content root. Each is there only
  * where the surface has it: `tex`, a display maths element's TeX, from MathJax's math list (MathJax removes the TeX
  * from the page as it typesets, and keeps it on each MathItem with the element it typeset); `code`, the input of
- * the cell the surface is or lies in, or of the code block it is or lies in; `heading`, a heading's text without its
- * section number or permalink; `label`, the nearest id at or above the surface, below its section, that docutils did
- * not generate (`id1`, `id2`, …: those name no label).
+ * the cell the surface is or lies in, or of the code block it is or lies in, without Pygments' line numbers
+ * (`span.linenos`); `heading`, a heading's text without its section number or permalink; `label`, the id at the
+ * surface's own label site, the surface itself or, for a display, the `div.math` Sphinx puts its label on. The
+ * engine keeps a label only where the page's source has it, so docutils' generated ids (`id1`, `toggle-2`,
+ * `example-3`, …) never become keys.
  */
 function sourceOf(e, root) {
   const out = {};
@@ -44,15 +46,18 @@ function sourceOf(e, root) {
   }
   const cell = e.closest("div.cell");
   const code = cell ? cell.querySelector(".cell_input pre") : e.closest('div[class*="highlight-"]')?.querySelector("pre");
-  if (code) out.code = code.textContent;
+  if (code) {
+    const c = code.cloneNode(true);
+    for (const x of c.querySelectorAll(".linenos")) x.remove();
+    out.code = c.textContent;
+  }
   if (/^H[1-6]$/.test(e.tagName)) {
     const h = e.cloneNode(true);
     for (const x of h.querySelectorAll("a.headerlink, span.section-number")) x.remove();
     out.heading = h.textContent;
   }
-  for (let x = e; x && x !== root && x.tagName !== "SECTION"; x = x.parentElement) {
-    if (x.id && !/^id\d+$/.test(x.id)) { out.label = x.id; break; }
-  }
+  const site = e.matches("mjx-container") ? e.parentElement : e;
+  if (site?.id) out.label = site.id;
   return out;
 }
 
@@ -254,6 +259,9 @@ export default {
   // the metrics' theme facts (D19): the content root, the body text inside it, and where a surface's key sits
   content: profile.text,
   bodyText: profile.body,
+  // MathJax's CHTML output draws every glyph as the ::before content of an mjx-c, with no text node: the metrics read
+  // those, and its assistive MathML, clipped to nothing, is hidden text they leave out
+  glyphs: "mjx-c",
   sourceOf,
   repository: "QuantEcon/test-lecture-theme-sphinx",
   basePath: "/test-lecture-theme-sphinx/",

@@ -1,20 +1,23 @@
-# The self-test's drawn table: the format of ../drawn.yml, with seven of its entries. Five carry this site's real
+# The self-test's drawn table: the format of ../drawn.yml, with ten of its entries. Eight carry this site's real
 # selector, so the fixtures in good/ and bad/ are counted, and measured, as the real pages are; `math-inline` is null,
 # as it is there, so the self-test sees a family that writes no rows; and `figure` is given a selector the browser
 # cannot parse, so its count is never taken: empty on every page, no metrics, and run.mjs exits 1. Between them, on
 # the fixtures:
-#   code-cell           good code_cells, three cells, all shown (the first wider inside than its box); bad
-#                       code_cells, one, on a page with no body text
+#   code-cell           good code_cells, four cells, all shown (the first numbers its lines and is wider inside than
+#                       its box, the fourth is folded whole); bad code_cells, one, on a page with no body text
 #   cell-output         good code_cells, an output inside hide-output's closed toggle (drawn, not shown) and a third
 #                       cell's output, with no text (drawn 2, shown 1: its metrics row is n 2)
-#   solution            good typography, one beside an exercise, on a translucent background; bad typography, one
-#                       hidden by a style: drawn 1, shown 0
-#   cite-parenthetical  {select, text}: good typography, the text filter keeps the bracketed citation and drops the
-#                       narrative one; it has no key, so it pairs by n
-#   math-display        good math, one display, keyed by its TeX
+#   tag-hide-cell       good code_cells, the fourth cell's fold, keyed by the code it hides
+#   solution            good typography, one beside an exercise, on a translucent background, keyed by its label;
+#                       bad typography, one hidden by a style: drawn 1, shown 0
+#   cite-parenthetical  {select, text}: good typography, the text filter keeps the bracketed citation (inside the
+#                       solution) and drops the narrative one; it has no key, so it pairs by n
+#   math-display        good math, two displays drawn as MathJax's glyphs, keyed by their TeX
+#   heading-h1          the page titles of good intro, typography and code_cells and bad code_cells
+#   heading-h2          good typography, a heading whose two styles tie
 # Every page where nothing matches is a row of 0; bad's missing page (long_cells) and its intro in dark, whose
 # scheme does not take effect, are empty. The counts are compared with expected-<site>-counts.csv, and the metrics
-# of every surface shown with expected-<site>-metrics.csv.
+# of every surface shown with expected-<site>-metrics.csv. The labels a key may take are selftest/labels.yml's.
 source:
   repository: QuantEcon/project-theme-parity
   path: bin/drawn.yml
@@ -25,6 +28,8 @@ families:
     selector: "main div.cell"
   - id: cell-output
     selector: "main div.cell_output"
+  - id: tag-hide-cell
+    selector: "main div.cell.tag_hide-cell > details.above-input"
   - id: solution
     selector: "main div.admonition.solution"
   - id: cite-parenthetical
@@ -33,6 +38,10 @@ families:
       text: "^\\["
   - id: math-display
     selector: 'main mjx-container[display="true"]:not(:has(mjx-merror))'
+  - id: heading-h1
+    selector: "main h1"
+  - id: heading-h2
+    selector: "main h2"
   - id: math-inline
     selector: null
     why: inline-maths
