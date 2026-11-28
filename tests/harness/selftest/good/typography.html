@@ -2,19 +2,50 @@
 <html lang="en"><head><meta charset="utf-8"><title>Typography — self-test</title>
 <style>body{margin:0;font:16px sans-serif} .qe-page__content{max-width:800px;margin:0 auto} .qe-page__content p{font-size:18px}
 body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .stderr-content.expanded{display:block}
-.highlight{overflow:hidden} pre{margin:0}</style></head>
+.highlight{overflow:hidden} pre{margin:0}
+/* the metrics (D19): each measured box pinned in px, so the expected metrics hold whatever the platform's fonts */
+.qe-page__content section > p{margin-left:10px;margin-right:10px} .qe-page__content p.narrow{margin-right:210px}
+h1{margin:0;height:40px;font-size:32px;line-height:40px} h2{margin:0;height:32px;font-size:24px;line-height:32px;color:rgba(0,0,0,.6)}
+.section-number{color:#888888} a.headerlink{color:#999999} h2 code{font:20px monospace} .qe-page__content p.lede{background:#fafafa}
+mjx-assistive-mml{position:absolute!important;top:0;left:0;clip:rect(1px,1px,1px,1px);padding:1px 0 0 0!important;border:0!important;display:block!important;width:auto!important;overflow:hidden!important}
+.solution{height:120px;background:rgba(0,0,255,.2)} .solution .admonition-title{margin:0;font-size:14px;font-weight:700;color:#555555}
+.solution section p{margin:0;font-size:15px;line-height:24px;color:#333333} .bibtex-citation{display:inline-block;width:200px;height:24px}</style></head>
 <body>
 <script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
 try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
 <ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
-<main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="typography"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
-<!-- the drawn counts: cite-parenthetical's text filter keeps the bracketed citation and drops the narrative one -->
-<p>As <span class="bibtex-citation" id="id1">Keynes [<a class="reference internal" href="#id3">1940</a>]</span> argued, and others since
-<span class="bibtex-citation" id="id2">[<a class="reference internal" href="#id4">Russell, 2004</a>]</span>.</p>
+<main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="typography">
+<!-- the metrics: the page's title and a section heading, each keyed by its text without its number or permalink. The
+     section heading's own text and its code are drawn in two styles with five characters each: the first in document
+     order is its dominant text, in a translucent colour composited over the page's -->
+<h1><span class="section-number">2. </span>Typography<a class="headerlink" href="#typography" title="Link to this heading">#</a></h1>
+<!-- the metrics: the first paragraph sits on a background of its own, so dark-palette's page colour is the content
+     root's and not the paragraph's -->
+<!-- the metrics: the first body paragraph is hidden, so the body text is the first one shown -->
+<p style="display:none;font-size:30px;line-height:36px;background:#fafafa">A paragraph the reader does not see.</p>
+<p class="lede">A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
+<!-- the metrics: a second paragraph of running text, set narrower: the body text is the first, and both are set in from
+     the content root, so the column is the paragraph's width and not the root's -->
+<p class="narrow">A second paragraph of lecture text, set narrower than the first.</p>
+<section id="lists"><h2><span class="section-number">2.1. </span>Lists <code class="docutils literal notranslate"><span class="pre">ab12c</span></code><a class="headerlink" href="#lists" title="Link to this heading">#</a></h2>
+<!-- the drawn counts: cite-parenthetical's text filter keeps the bracketed citation (in the solution below) and drops
+     the narrative one -->
+<p>As <span class="bibtex-citation" id="id1">Keynes [<a class="reference internal" href="#id3">1940</a>]</span> argued.</p></section>
+<!-- the metrics: a section heading with inline maths, keyed by its text with the maths as its TeX, from the math list
+     below, as the mystmd corpus's is from KaTeX's annotation: the same key -->
+<section id="sums-over-x-i"><h2><span class="section-number">2.2. </span>Sums over <span class="math notranslate nohighlight"><mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" style="font-size: 101.6%; position: relative;"><mjx-math class="MJX-TEX" aria-hidden="true"><mjx-msub><mjx-mi class="mjx-i"><mjx-c class="mjx-c1D465 TEX-I"></mjx-c></mjx-mi><mjx-script style="vertical-align: -0.15em;"><mjx-mi class="mjx-i" size="s"><mjx-c class="mjx-c1D456 TEX-I"></mjx-c></mjx-mi></mjx-script></mjx-msub></mjx-math><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>x</mi><mi>i</mi></msub></math></mjx-assistive-mml></mjx-container></span><a class="headerlink" href="#sums-over-x-i" title="Link to this heading">#</a></h2></section>
 <div class="exercise admonition" id="selftest-ex-1"><p class="admonition-title"><span class="caption-number">Exercise 1 </span></p>
 <section id="exercise-content"><p>Show that it holds.</p></section></div>
-<div class="solution admonition" id="selftest-sol-1"><p class="admonition-title">Solution to<a class="reference internal" href="#selftest-ex-1"> Exercise 1</a></p>
-<section id="solution-content"><p>It holds.</p></section></div></section></main>
+<!-- the metrics: the solution's title is its first text and its answer its dominant text, set smaller than the box, on a
+     translucent background composited over the page's (in dark, a pair below 4.5:1). Its id is its label, as the
+     page's source writes it (selftest/labels.yml), so it is its key. The citation inside it has an id docutils
+     generated, no label, so it has no key and pairs by n, and takes none from the box it sits in -->
+<div class="solution admonition" id="selftest_sol_1"><p class="admonition-title">Solution to<a class="reference internal" href="#selftest-ex-1"> Exercise 1</a></p>
+<section id="solution-content"><p>It holds, since every term of the series is positive and their sum is finite, as <span class="bibtex-citation" id="id2">[<a class="reference internal" href="#id4">Russell, 2004</a>]</span> shows.</p></section></div>
+<!-- the metrics: a table docutils gives the id make_id makes of its :name: (selftest_tbl_1), so it keys by that label -->
+<table class="docutils align-default" id="selftest-tbl-1" style="width:300px;height:40px;border-collapse:collapse"><tbody><tr><td>a table with a label of its own</td></tr></tbody></table></section></main>
+<script>/* MathJax's math list, as it keeps it once typeset: the heading's inline expression */
+window.MathJax = { startup: { document: { math: [{ math: "x_i", display: false, typesetRoot: document.querySelector("h2 mjx-container") }] } } };</script>
 <script>/* a working toggle: switches the page and keeps the choice */
 document.querySelector(".btn__contrast").addEventListener("click", function () {
   var dark = !document.body.classList.contains("dark-theme");

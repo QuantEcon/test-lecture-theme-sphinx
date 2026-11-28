@@ -9,18 +9,34 @@
 <meta name="twitter:card" content="summary">
 <style>body{margin:0;font:16px sans-serif} .qe-page__content{max-width:800px;margin:0 auto} .qe-page__content p{font-size:18px}
 body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .stderr-content.expanded{display:block}
-.highlight{overflow:hidden;position:relative} pre{margin:0}</style></head>
+.highlight{overflow:hidden;position:relative} pre{margin:0}
+/* the metrics (D19): each measured box pinned in px, so the expected metrics hold whatever the platform's fonts */
+.cell{height:120px;overflow-x:auto} .cell .wide{width:1000px;height:1px} .linenos{color:#999999} .cell_output pre{color:#555555}
+h1{margin:0;height:40px;font-size:32px;line-height:40px} .section-number{color:#888888} a.headerlink{color:#999999} details.hide:not([open]) summary .expanded{display:none} details.above-input{display:block;height:24px}</style></head>
 <body>
 <script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
 try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
 <ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
-<div class="qe-page__header"><h1 class="qe-page__header-heading"><a href="intro.html">Self-test Lectures</a></h1></div><main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="code-cells"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
+<div class="qe-page__header"><h1 class="qe-page__header-heading"><a href="intro.html">Self-test Lectures</a></h1></div><main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="code-cells"><h1><span class="section-number">3. </span>Code cells<a class="headerlink" href="#code-cells" title="Link to this heading">#</a></h1>
+<p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
 <div class="cell docutils container"><div class="cell_input docutils container"><div class="highlight-ipython3 notranslate"><div class="highlight"><pre id="codecell0"><span></span>import numpy as np
-x = np.linspace(0, 1, 5)</pre><button class="copybtn o-tooltip--left" data-tooltip="Copy" data-clipboard-target="#codecell0">copy</button></div></div></div></div>
-<!-- the drawn counts: a second cell, tagged hide-output, whose output the theme draws inside the closed toggle -->
+x = np.linspace(0, 1, 5)</pre><button class="copybtn o-tooltip--left" data-tooltip="Copy" data-clipboard-target="#codecell0">copy</button></div></div></div>
+<!-- the metrics: content wider than the cell, which scrolls it, so the cell overflows and the page does not -->
+<div class="wide"></div></div>
+<!-- the drawn counts: a second cell, tagged hide-output, whose output the theme draws inside the closed toggle; the
+     metrics leave that output's text out of the cell's dominant text, though it is longer than the input -->
 <div class="cell tag_hide-output docutils container"><div class="cell_input docutils container"><div class="highlight-ipython3 notranslate"><div class="highlight"><pre id="codecell1"><span></span>print(x.sum())</pre></div></div></div>
 <details class="admonition hide below-input"><summary aria-label="Toggle hidden content"><p class="collapsed admonition-title">Show output</p></summary>
-<div class="cell_output docutils container"><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre id="codecell2"><span></span>2.5</pre></div></div></div></details></div></section></main><div class="stderr-collapsible-wrapper"><button class="stderr-toggle-button" aria-expanded="false">Code warnings</button>
+<div class="cell_output docutils container"><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre id="codecell2"><span></span>The sum of x is 2.5</pre></div></div></div></details></div>
+<!-- the metrics: a third cell, whose output shows no text (its text measures are empty), and is the second output
+     drawn and the first shown: its n is 2. It numbers its lines (Pygments' span.linenos), and the mystmd corpus's
+     does not; the second cell is the other way round: their keys are the same -->
+<div class="cell docutils container"><div class="cell_input docutils container"><div class="highlight-ipython3 notranslate"><div class="highlight"><pre id="codecell3"><span></span><span class="linenos">1</span>plt.plot(x)</pre></div></div></div>
+<div class="cell_output docutils container"><div class="output text_plain" style="width:120px;height:60px;background:#888888"></div></div></div>
+<!-- the metrics: a fourth cell, tagged hide-cell, folded whole: its fold (tag-hide-cell) and its cell read the code it
+     hides as their key, and show only the fold's summary -->
+<div class="cell tag_hide-cell docutils container"><details class="hide above-input"><summary aria-label="Toggle hidden content"><span class="collapsed">Show code cell content</span><span class="expanded">Hide code cell content</span></summary>
+<div class="cell_input docutils container"><div class="highlight-ipython3 notranslate"><div class="highlight"><pre id="codecell4"><span></span>import matplotlib.pyplot as plt</pre></div></div></div></details></div></section></main><div class="stderr-collapsible-wrapper"><button class="stderr-toggle-button" aria-expanded="false">Code warnings</button>
 <div class="stderr-content">UserWarning: this goes to stderr</div></div>
 <script>document.querySelector(".stderr-toggle-button").addEventListener("click", function () {
   document.querySelector(".stderr-content").classList.toggle("expanded"); });</script>

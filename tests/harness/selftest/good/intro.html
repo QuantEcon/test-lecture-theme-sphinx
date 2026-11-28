@@ -2,12 +2,17 @@
 <html lang="en"><head><meta charset="utf-8"><link rel="canonical" href="https://quantecon.github.io{{base}}intro.html"><title>Intro — self-test</title>
 <style>body{margin:0;font:16px sans-serif} .qe-page__content{max-width:800px;margin:0 auto} .qe-page__content p{font-size:18px}
 body.dark-theme{background:#1b1e23;color:#ddd} .stderr-content{display:none} .stderr-content.expanded{display:block}
-.highlight{overflow:hidden} pre{margin:0}</style></head>
+.highlight{overflow:hidden} pre{margin:0}
+/* the metrics (D19): each measured box pinned in px */
+h1{margin:0;height:40px;font-size:32px;line-height:40px} .section-number{color:#888888} a.headerlink{color:#999999}</style></head>
 <body>
 <script>/* the theme's scheme: localStorage.setContrast, '1' for dark (layout.html) */
 try { if (localStorage.setContrast === "1") document.body.classList.add("dark-theme"); } catch (e) {}</script>
 <ul class="qe-toolbar"><li class="btn__contrast" data-tippy-content="Toggle dark mode">contrast</li></ul>
-<main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="self-test-lectures"><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p></section></main>
+<main class="qe-page__content"><section class="tex2jax_ignore mathjax_ignore" id="self-test-lectures"><!-- the metrics: the first page's title, the book's, as the mystmd site's first page names it -->
+<h1>Self-test Lectures<a class="headerlink" href="#self-test-lectures" title="Link to this heading">#</a></h1>
+<script>/* quantecon-book-theme's script puts the page's author links in a paragraph of their own after the title: no body text */
+document.querySelector("main h1").insertAdjacentHTML("afterend", '<p id="qe-page-author-links" style="font-size:14px;line-height:20px">By <a href="https://example.org/">A. Author</a></p>');</script><p>A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p></section></main>
 <script>/* a working toggle: switches the page and keeps the choice */
 document.querySelector(".btn__contrast").addEventListener("click", function () {
   var dark = !document.body.classList.contains("dark-theme");
