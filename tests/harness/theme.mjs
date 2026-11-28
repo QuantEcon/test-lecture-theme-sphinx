@@ -7,6 +7,7 @@ import YAML from "yaml";
 import { SiteFault, press, settleBase, oneLine, said, sleep } from "./lib/util.mjs";
 import { MARKER_NAMES, errorMarkers } from "./lib/markers.mjs";
 import * as B from "./lib/behave.mjs";
+import { LABEL_IDS } from "./lib/labels.mjs";
 const { pass, fail, skip, yes } = B;
 
 /** A page's stem from a link on this site: `code_cells.html#x` -> `code_cells`. */
@@ -67,29 +68,8 @@ function sourceOf(e, root) {
   return out;
 }
 
-// docutils' make_id (docutils/nodes.py), which gives a target's id from its label: lower-cased, the letters with no
-// decomposition and the digraphs below written in ASCII, the rest decomposed and kept to ASCII, every run of other
-// characters as `-`, and leading digits and hyphens and trailing hyphens dropped (`2d-plot` is `d-plot`)
-const ID_DIGRAPHS = { "\u00df": "sz", "\u00e6": "ae", "\u0153": "oe", "\u0238": "db", "\u0239": "qp" };
-const ID_LETTERS = {
-  "\u00f8": "o", "\u0111": "d", "\u0127": "h", "\u0131": "i", "\u0142": "l", "\u0167": "t", "\u0180": "b", "\u0183": "b",
-  "\u0188": "c", "\u018c": "d", "\u0192": "f", "\u0199": "k", "\u019a": "l", "\u019e": "n", "\u01a5": "p", "\u01ab": "t",
-  "\u01ad": "t", "\u01b4": "y", "\u01b6": "z", "\u01e5": "g", "\u0225": "z", "\u0234": "l", "\u0235": "n", "\u0236": "t",
-  "\u0237": "j", "\u023c": "c", "\u023f": "s", "\u0240": "z", "\u0247": "e", "\u0249": "j", "\u024b": "q", "\u024d": "r",
-  "\u024f": "y",
-};
-export function docutilsId(label) {
-  const id = [...String(label).toLowerCase()].map((c) => ID_DIGRAPHS[c] ?? c).map((c) => ID_LETTERS[c] ?? c).join("")
-    .normalize("NFKD").replace(/[^\x00-\x7f]/g, "");
-  return id.split(/\s+/).filter(Boolean).join(" ").replace(/[^a-z0-9]+/g, "-").replace(/^[-0-9]+|-+$/g, "");
-}
-
-/**
- * The ids this build gives a source label: the label as written (sphinx-exercise and sphinx-proof keep it, as
- * `short_path_ex1`), docutils' id for it (a target, a figure's or code block's `:name:`, a footnote), and a display's,
- * `equation-` and the label through make_id.
- */
-const labelIds = (label) => [label, docutilsId(label), docutilsId(`equation-${label}`)];
+// the ids this build gives a source label: lib/labels.mjs, which holds both stacks' rules
+const labelIds = LABEL_IDS.sphinx;
 
 const behaviours = {
   ...B.commonBehaviours(profile),
@@ -292,6 +272,8 @@ export default {
   // MathJax's CHTML output draws every glyph as the ::before content of an mjx-c, with no text node: the metrics read
   // those, and its assistive MathML, clipped to nothing, is hidden text they leave out
   glyphs: "mjx-c",
+  // a heading's section number, left out of its dominant text: a heading reads as its own text however short
+  textSkip: ":is(h1, h2, h3, h4, h5, h6) span.section-number",
   sourceOf,
   labelIds,
   repository: "QuantEcon/test-lecture-theme-sphinx",
