@@ -19,11 +19,13 @@ function stemOf(href, base) {
 // The body text: a paragraph of running text, directly in a section and in no box. `para` takes every paragraph of
 // the text, boxed ones too (an exercise's, a proof's: on `admonitions` and `exercises` the commonest paragraph is a
 // boxed one), so it serves the behaviours that read the text (font-size, dark-palette), and `body` is the metrics'
-// reference for size and column. One proof dropdown is drawn without `.admonition`, hence `.proof` too.
+// reference for size and column. One proof dropdown is drawn without `.admonition`, hence `.proof` too; and the
+// theme's script puts the page's author links in a paragraph of their own after the title
+// (`p#qe-page-author-links`, set at the size it sets body text at desktop whatever the width), which is no body text.
 const profile = {
   text: "main.qe-page__content", // the lecture text
   para: ".qe-page__content p",
-  body: "section > p:not(.admonition *):not(.proof *)", // inside `text`
+  body: "section > p:not(.admonition *):not(.proof *):not(#qe-page-author-links)", // inside `text`
   stemOf,
   maths: { all: "mjx-container", menu: ".CtxtMenu_Menu", item: ".CtxtMenu_MenuItem" },
 };
@@ -34,7 +36,8 @@ const profile = {
  * where the surface has it: `tex`, a display maths element's TeX, from MathJax's math list (MathJax removes the TeX
  * from the page as it typesets, and keeps it on each MathItem with the element it typeset); `code`, the input of
  * the cell the surface is or lies in, or of the code block it is or lies in, without Pygments' line numbers
- * (`span.linenos`); `heading`, a heading's text without its section number or permalink; `label`, the id at the
+ * (`span.linenos`); `heading`, a heading's text without its section number or permalink, each inline maths
+ * element in it replaced by its TeX (from the math list) between U+E000 and U+E001; `label`, the id at the
  * surface's own label site, the surface itself or, for a display, the `div.math` Sphinx puts its label on. The
  * engine keeps a label only where the page's source has it, so docutils' generated ids (`id1`, `toggle-2`,
  * `example-3`, …) never become keys.
@@ -52,8 +55,11 @@ function sourceOf(e, root) {
     out.code = c.textContent;
   }
   if (/^H[1-6]$/.test(e.tagName)) {
+    const list = [...(window.MathJax?.startup?.document?.math ?? [])];
+    const tex = [...e.querySelectorAll("mjx-container")].map((c) => String(list.find((m) => m.typesetRoot === c)?.math ?? ""));
     const h = e.cloneNode(true);
     for (const x of h.querySelectorAll("a.headerlink, span.section-number")) x.remove();
+    [...h.querySelectorAll("mjx-container")].forEach((c, i) => c.replaceWith(`\uE000${tex[i] ?? ""}\uE001`));
     out.heading = h.textContent;
   }
   const site = e.matches("mjx-container") ? e.parentElement : e;

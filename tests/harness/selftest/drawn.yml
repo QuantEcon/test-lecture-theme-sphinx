@@ -1,4 +1,4 @@
-# The self-test's drawn table: the format of ../drawn.yml, with ten of its entries. Eight carry this site's real
+# The self-test's drawn table: the format of ../drawn.yml, with eleven of its entries. Nine carry this site's real
 # selector, so the fixtures in good/ and bad/ are counted, and measured, as the real pages are; `math-inline` is null,
 # as it is there, so the self-test sees a family that writes no rows; and `figure` is given a selector the browser
 # cannot parse, so its count is never taken: empty on every page, no metrics, and run.mjs exits 1. Between them, on
@@ -14,7 +14,8 @@
 #                       solution) and drops the narrative one; it has no key, so it pairs by n
 #   math-display        good math, two displays drawn as MathJax's glyphs, keyed by their TeX
 #   heading-h1          the page titles of good intro, typography and code_cells and bad code_cells
-#   heading-h2          good typography, a heading whose two styles tie
+#   heading-h2          good typography, a heading whose two styles tie, and one with inline maths
+#   table               none on the fixtures: run.mjs's forced-fault run adds a bordered one
 # Every page where nothing matches is a row of 0; bad's missing page (long_cells) and its intro in dark, whose
 # scheme does not take effect, are empty. The counts are compared with expected-<site>-counts.csv, and the metrics
 # of every surface shown with expected-<site>-metrics.csv. The labels a key may take are selftest/labels.yml's.
@@ -42,6 +43,8 @@ families:
     selector: "main h1"
   - id: heading-h2
     selector: "main h2"
+  - id: table
+    selector: "main table:not(.cell_output *)"
   - id: math-inline
     selector: null
     why: inline-maths
