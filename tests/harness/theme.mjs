@@ -39,8 +39,8 @@ const profile = {
  * (`span.linenos`); `heading`, a heading's text without its section number or permalink, each inline maths
  * element in it replaced by its TeX (from the math list) between U+E000 and U+E001; `label`, the id at the
  * surface's own label site, the surface itself or, for a display, the `div.math` Sphinx puts its label on. The
- * engine keeps a label only where the page's source has it, so docutils' generated ids (`id1`, `toggle-2`,
- * `example-3`, …) never become keys.
+ * engine keeps a label only where it is an id `labelIds` gives one of the page's source labels, so docutils'
+ * generated ids (`id1`, `toggle-2`, `example-3`, …) never become keys.
  */
 function sourceOf(e, root) {
   const out = {};
@@ -66,6 +66,30 @@ function sourceOf(e, root) {
   if (site?.id) out.label = site.id;
   return out;
 }
+
+// docutils' make_id (docutils/nodes.py), which gives a target's id from its label: lower-cased, the letters with no
+// decomposition and the digraphs below written in ASCII, the rest decomposed and kept to ASCII, every run of other
+// characters as `-`, and leading digits and hyphens and trailing hyphens dropped (`2d-plot` is `d-plot`)
+const ID_DIGRAPHS = { "\u00df": "sz", "\u00e6": "ae", "\u0153": "oe", "\u0238": "db", "\u0239": "qp" };
+const ID_LETTERS = {
+  "\u00f8": "o", "\u0111": "d", "\u0127": "h", "\u0131": "i", "\u0142": "l", "\u0167": "t", "\u0180": "b", "\u0183": "b",
+  "\u0188": "c", "\u018c": "d", "\u0192": "f", "\u0199": "k", "\u019a": "l", "\u019e": "n", "\u01a5": "p", "\u01ab": "t",
+  "\u01ad": "t", "\u01b4": "y", "\u01b6": "z", "\u01e5": "g", "\u0225": "z", "\u0234": "l", "\u0235": "n", "\u0236": "t",
+  "\u0237": "j", "\u023c": "c", "\u023f": "s", "\u0240": "z", "\u0247": "e", "\u0249": "j", "\u024b": "q", "\u024d": "r",
+  "\u024f": "y",
+};
+export function docutilsId(label) {
+  const id = [...String(label).toLowerCase()].map((c) => ID_DIGRAPHS[c] ?? c).map((c) => ID_LETTERS[c] ?? c).join("")
+    .normalize("NFKD").replace(/[^\x00-\x7f]/g, "");
+  return id.split(/\s+/).filter(Boolean).join(" ").replace(/[^a-z0-9]+/g, "-").replace(/^[-0-9]+|-+$/g, "");
+}
+
+/**
+ * The ids this build gives a source label: the label as written (sphinx-exercise and sphinx-proof keep it, as
+ * `short_path_ex1`), docutils' id for it (a target, a figure's or code block's `:name:`, a footnote), and a display's,
+ * `equation-` and the label through make_id.
+ */
+const labelIds = (label) => [label, docutilsId(label), docutilsId(`equation-${label}`)];
 
 const behaviours = {
   ...B.commonBehaviours(profile),
@@ -269,6 +293,7 @@ export default {
   // those, and its assistive MathML, clipped to nothing, is hidden text they leave out
   glyphs: "mjx-c",
   sourceOf,
+  labelIds,
   repository: "QuantEcon/test-lecture-theme-sphinx",
   basePath: "/test-lecture-theme-sphinx/",
   publishedBase: "https://quantecon.github.io/test-lecture-theme-sphinx/",

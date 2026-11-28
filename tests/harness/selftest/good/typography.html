@@ -21,6 +21,8 @@ try { if (localStorage.setContrast === "1") document.body.classList.add("dark-th
 <h1><span class="section-number">2. </span>Typography<a class="headerlink" href="#typography" title="Link to this heading">#</a></h1>
 <!-- the metrics: the first paragraph sits on a background of its own, so dark-palette's page colour is the content
      root's and not the paragraph's -->
+<!-- the metrics: the first body paragraph is hidden, so the body text is the first one shown -->
+<p style="display:none;font-size:30px;line-height:36px">A paragraph the reader does not see.</p>
 <p class="lede">A paragraph of lecture text, long enough to measure, with <a href="intro.html">a link</a>.</p>
 <!-- the metrics: a second paragraph of running text, set narrower: the body text is the first, and both are set in from
      the content root, so the column is the paragraph's width and not the root's -->
